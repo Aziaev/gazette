@@ -15,10 +15,18 @@ import NewspaperContext from "../context/NewspaperContext";
 import {
   clone,
   deleteArrayItemById,
+  convertEditorStateToHtml,
   findIndexInArray,
   formatDate,
   getEmptyArticle,
 } from "../utils";
+
+import { convertToRaw } from "draft-js";
+import { EditorState } from "draft-js";
+import { Editor } from "react-draft-wysiwyg";
+import { convertFromRaw, convertFromHTML } from "draft-js";
+// import draftToHtml from "draftjs-to-html";
+// import htmlToDraft from "html-to-draftjs";
 
 const columnsConfig = {
   0: {},
@@ -43,12 +51,12 @@ const columnsConfig = {
 export default function Issue() {
   const { newspaperId, issueId } = useParams();
   const { findIssueByIds, updateIssue } = useContext(NewspaperContext);
+  const [editedArticle, setEditedArticle] = useState(null);
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
   const issue = findIssueByIds(newspaperId, issueId);
   const { articles, columns } = issue;
-
-  const displayAddButton = articles.length < columns;
-
-  const [editedArticle, setEditedArticle] = useState(null);
 
   function handleClose() {
     setEditedArticle(null);
@@ -74,7 +82,16 @@ export default function Issue() {
 
   function editArticle(article) {
     const clonedArticle = clone(article);
+    if (clonedArticle.text) {
+      try {
+        const contentState = convertFromRaw(clonedArticle.text);
+        const editorState = EditorState.createWithContent(contentState);
 
+        setEditorState(editorState);
+      } catch (e) {
+        console.log(e);
+      }
+    }
     setEditedArticle(clonedArticle);
   }
 
@@ -92,10 +109,14 @@ export default function Issue() {
       editedArticle.id
     );
 
-    clonedIssue.articles[articleIndex] = editedArticle;
+    clonedIssue.articles[articleIndex] = {
+      ...editedArticle,
+      text: convertToRaw(editorState.getCurrentContent()),
+    };
 
     updateIssue(clonedIssue);
     setEditedArticle(null);
+    setEditorState(() => EditorState.createEmpty());
   }
 
   if (!issue) {
@@ -105,6 +126,8 @@ export default function Issue() {
       </Typography>
     );
   }
+
+  const displayAddButton = articles.length < columns;
 
   return (
     <>
@@ -143,7 +166,12 @@ export default function Issue() {
           )}
         </Grid>
       </Box>
-      <Dialog fullWidth onClose={handleClose} open={!!editedArticle}>
+      <Dialog
+        maxWidth="lg"
+        fullWidth
+        onClose={handleClose}
+        open={!!editedArticle}
+      >
         <DialogTitle>Редактирование статьи</DialogTitle>
         <DialogContent>
           <TextField
@@ -158,6 +186,20 @@ export default function Issue() {
             value={(editedArticle && editedArticle.headline) || ""}
             onChange={handleChange}
           />
+          <Box
+            sx={{
+              mt: "2rem",
+              border: "1px lightgrey dashed",
+            }}
+          >
+            <Editor
+              wrapperClassName="wrapper-class"
+              editorClassName="editor-class"
+              toolbarClassName="toolbar-class"
+              editorState={editorState}
+              onEditorStateChange={setEditorState}
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Отменить</Button>

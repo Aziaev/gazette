@@ -1,4 +1,5 @@
 import { format, isValid } from "date-fns";
+import draftToHtml from "draftjs-to-html";
 import shortId from "shortid";
 
 export function formatDate(date) {
@@ -31,4 +32,8 @@ export function deleteArrayItemById(arr, itemId) {
 
 export function findIndexInArray(arr, itemId) {
   return arr.findIndex(({ id }) => itemId === id);
+}
+
+export function convertRawToHtml(draft) {
+  return draftToHtml(draft);
 }
