@@ -28,3 +28,7 @@ export function deleteArrayItemById(arr, itemId) {
 
   return arr;
 }
+
+export function findIndexInArray(arr, itemId) {
+  return arr.findIndex(({ id }) => itemId === id);
+}

@@ -40,9 +40,7 @@ export default function ArticleCard(props) {
           </Typography>
           <Typography
             variant="body2"
-            sx={
-              article.headline ? { mt: 1.5 } : { mt: 1.5, color: "lightgrey" }
-            }
+            sx={article.text ? { mt: 1.5 } : { mt: 1.5, color: "lightgrey" }}
           >
             {article.text || "Нет текста"}
           </Typography>

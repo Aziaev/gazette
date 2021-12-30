@@ -12,18 +12,32 @@ import { useContext, useState } from "react";
 import shortid from "shortid";
 import NewspaperCard from "../components/NewspaperCard";
 import NewspaperContext from "../context/NewspaperContext";
+import { clone } from "../utils";
 
 export default function Newspapers() {
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState(null);
-  const [description, setDescription] = useState(null);
-  const { newspapers, addNewspaper, deleteNewspaper } =
-    useContext(NewspaperContext);
+  const {
+    newspapers,
+    addNewspaper,
+    deleteNewspaper,
+    updateNewspaper,
+    findNewspaperById,
+  } = useContext(NewspaperContext);
+  const [newspaper, setNewspaper] = useState(false);
 
-  function handleAddNewspaper() {
-    const newspaper = { id: shortid.generate(), name, description, issues: [] };
+  function handleSave() {
+    if (newspaper.id) {
+      const clonedNewspaper = clone(newspaper);
 
-    addNewspaper(newspaper);
+      updateNewspaper(clonedNewspaper);
+    } else {
+      const createdNewspaper = {
+        ...newspaper,
+        id: shortid.generate(),
+        issues: [],
+      };
+
+      addNewspaper(createdNewspaper);
+    }
 
     handleClose();
   }
@@ -33,14 +47,24 @@ export default function Newspapers() {
     deleteNewspaper(currentId);
   }
 
+  function handleEditNewspaper(e) {
+    const currentId = e.currentTarget.id;
+    const newspaper = findNewspaperById(currentId);
+    const clonedNewspaper = clone(newspaper);
+    setNewspaper(clonedNewspaper);
+  }
+
   function handleOpen() {
-    setOpen(true);
+    setNewspaper({});
   }
 
   function handleClose() {
-    setOpen(false);
-    setName(null);
-    setDescription(null);
+    setNewspaper(null);
+  }
+
+  function handleChange(e) {
+    const { name, value } = e.currentTarget;
+    setNewspaper({ ...newspaper, [name]: value });
   }
 
   return (
@@ -52,6 +76,7 @@ export default function Newspapers() {
               key={newspaper.id}
               {...newspaper}
               handleDeleteNewspaper={handleDeleteNewspaper}
+              handleEditNewspaper={handleEditNewspaper}
             />
           ))}
           <Grid item xs={12} sx={{ textAlign: "center", cursor: "pointer" }}>
@@ -61,7 +86,7 @@ export default function Newspapers() {
           </Grid>
         </Grid>
       </Box>
-      <Dialog onClose={handleClose} open={open}>
+      <Dialog fullWidth onClose={handleClose} open={!!newspaper}>
         <DialogTitle>Добавление газеты</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -73,29 +98,29 @@ export default function Newspapers() {
             label="Название газеты"
             fullWidth
             variant="standard"
-            value={name}
-            maxlength={3}
+            name="name"
+            value={(newspaper && newspaper.name) || ""}
             inputProps={{
               maxLength: 32,
             }}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleChange}
           />
           <TextField
             margin="dense"
             label="Описание газеты"
             fullWidth
             variant="standard"
-            value={description}
-            maxlength={3}
+            name="description"
+            value={(newspaper && newspaper.description) || ""}
             inputProps={{
               maxLength: 64,
             }}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={handleChange}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Отменить</Button>
-          <Button onClick={handleAddNewspaper}>Сохранить</Button>
+          <Button onClick={handleSave}>Сохранить</Button>
         </DialogActions>
       </Dialog>
     </>

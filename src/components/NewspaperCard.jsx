@@ -1,16 +1,17 @@
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import Newspaper from "../pages/Newspaper";
 
 export default function NewspaperCard(props) {
-  const { id, name, description, handleDeleteNewspaper } = props;
+  const { id, name, description, handleDeleteNewspaper, handleEditNewspaper } =
+    props;
   const navigate = useNavigate();
 
   function handleOpenNewspaper(e) {
@@ -31,6 +32,9 @@ export default function NewspaperCard(props) {
         }}
       >
         <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            газета
+          </Typography>
           <Typography variant="h5" component="div">
             {name}
           </Typography>
@@ -39,9 +43,16 @@ export default function NewspaperCard(props) {
           </Typography>
         </CardContent>
         <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
-          <IconButton id={id} onClick={handleDeleteNewspaper}>
-            <DeleteIcon />
-          </IconButton>
+          <Button
+            id={id}
+            onClick={handleDeleteNewspaper}
+            startIcon={<DeleteIcon />}
+          />
+          <Button
+            id={id}
+            onClick={handleEditNewspaper}
+            startIcon={<EditIcon />}
+          />
           <Button size="small" id={id} onClick={handleOpenNewspaper}>
             Посмотреть
           </Button>

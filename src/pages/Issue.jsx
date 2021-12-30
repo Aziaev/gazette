@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -16,6 +15,7 @@ import NewspaperContext from "../context/NewspaperContext";
 import {
   clone,
   deleteArrayItemById,
+  findIndexInArray,
   formatDate,
   getEmptyArticle,
 } from "../utils";
@@ -55,12 +55,12 @@ export default function Issue() {
   }
 
   function addArticle() {
-    const tempIssue = { ...issue };
-    const { articles } = tempIssue;
+    const clonedIssue = clone(issue);
+    const { articles } = clonedIssue;
 
     if (displayAddButton) {
-      tempIssue.articles = [...articles, getEmptyArticle()];
-      updateIssue(tempIssue);
+      clonedIssue.articles = [...articles, getEmptyArticle()];
+      updateIssue(clonedIssue);
     }
   }
 
@@ -73,17 +73,35 @@ export default function Issue() {
   }
 
   function editArticle(article) {
-    setEditedArticle(article);
+    const clonedArticle = clone(article);
+
+    setEditedArticle(clonedArticle);
   }
 
   function handleChange(e) {
-    console.log(e.currentTarget);
+    const { name, value } = e.currentTarget;
+
+    setEditedArticle({ ...editedArticle, [name]: value });
+  }
+
+  function handleSave() {
+    const clonedIssue = clone(issue);
+
+    const articleIndex = findIndexInArray(
+      clonedIssue.articles,
+      editedArticle.id
+    );
+
+    clonedIssue.articles[articleIndex] = editedArticle;
+
+    updateIssue(clonedIssue);
+    setEditedArticle(null);
   }
 
   if (!issue) {
     return (
       <Typography variant="h2" gutterBottom component="div">
-        Выпуск не найден
+        Номер не найден
       </Typography>
     );
   }
@@ -93,7 +111,7 @@ export default function Issue() {
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <Box sx={{ mb: "1rem" }}>
           <Typography variant="p" gutterBottom component="div">
-            Выпуск от {formatDate(issue.date)}
+            Номер от {formatDate(issue.date)}
           </Typography>
           <Typography variant="h3" gutterBottom component="div">
             {issue.name}
@@ -125,24 +143,25 @@ export default function Issue() {
           )}
         </Grid>
       </Box>
-      <Dialog onClose={handleClose} open={!!editedArticle}>
-        <DialogTitle>Добавление выпуска</DialogTitle>
+      <Dialog fullWidth onClose={handleClose} open={!!editedArticle}>
+        <DialogTitle>Редактирование статьи</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Введите название, дату и количество колонок в выпуске
-          </DialogContentText>
           <TextField
             margin="dense"
             label="Заголовок статьи"
             fullWidth
             variant="standard"
-            value={editedArticle && editedArticle.headline}
+            name="headline"
+            inputProps={{
+              maxLength: 32,
+            }}
+            value={(editedArticle && editedArticle.headline) || ""}
             onChange={handleChange}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Отменить</Button>
-          <Button onClick={handleClose}>Сохранить</Button>
+          <Button onClick={handleSave}>Сохранить</Button>
         </DialogActions>
       </Dialog>
     </>

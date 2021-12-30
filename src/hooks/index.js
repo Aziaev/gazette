@@ -35,7 +35,7 @@ export default function useNewspaperProvider() {
     setNewspapers(tempNewspapers);
   }
 
-  // CRUD выпусков
+  // CRUD номеров
   function addIssue(issue) {
     const tempNewspapers = [...newspapers];
 
@@ -87,12 +87,16 @@ export default function useNewspaperProvider() {
 
   return {
     newspapers,
-    addNewspaper,
-    deleteNewspaper,
+
     findNewspaperById,
-    addIssue,
-    deleteIssue,
     findIssueByIds,
+
+    addNewspaper,
+    updateNewspaper,
+    deleteNewspaper,
+
+    addIssue,
     updateIssue,
+    deleteIssue,
   };
 }

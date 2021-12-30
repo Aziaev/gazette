@@ -44,7 +44,7 @@ export default function Main() {
             <NavSplitter />
             <NavItem
               isRouteActive={issueId}
-              text={`Выпуск от ${formatDate(issue.date)}`}
+              text={`Номер от ${formatDate(issue.date)}`}
             />
           </>
         )}
