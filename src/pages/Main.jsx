@@ -1,37 +1,64 @@
 import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { Outlet, useLocation, useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import NavItem from "../components/NavItem";
+import NavSplitter from "../components/NavSplitter";
+import NewspaperContext from "../context/NewspaperContext";
+import { formatDate } from "../utils";
+import Newspaper from "./Newspaper";
 
 export default function Main() {
-  const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isRouteActive = pathname === Main.route;
+
+  const { newspaperId, issueId } = useParams();
+  const { findNewspaperById, findIssueByIds } = useContext(NewspaperContext);
+  const newspaper = findNewspaperById(newspaperId);
+  const issue = findIssueByIds(newspaperId, issueId);
+
+  const isMainRoute = pathname === Main.route;
+  const isNewspaperRoute = newspaperId && !issueId;
 
   return (
     <>
-      <Box
-        sx={{ bgcolor: "white", padding: "1rem" }}
-        display="flex"
-        flexDirection="row"
-      >
-        <Link
-          sx={{
-            cursor: "pointer",
-            color: "black",
-            textDecoration: isRouteActive ? "none" : "underline",
-          }}
-          onClick={isRouteActive ? undefined : () => navigate(Main.route)}
-        >
-          <Typography variant="h3" gutterBottom component="div">
-            Издательство
-          </Typography>
-        </Link>
-      </Box>
-      <Box sx={{ bgcolor: "white", padding: "1rem", flexGrow: 1 }}>
+      <Navbar>
+        <NavItem
+          isRouteActive={isMainRoute}
+          variant="h4"
+          path={Main.route}
+          text="Издательство"
+        />
+        {newspaper && newspaperId && (
+          <>
+            <NavSplitter />
+            <NavItem
+              isRouteActive={isNewspaperRoute}
+              path={`/${Newspaper.route}/${newspaperId}`}
+              text={`Газета "${newspaper.name}"`}
+            />
+          </>
+        )}
+        {issue && issueId && (
+          <>
+            <NavSplitter />
+            <NavItem
+              isRouteActive={issueId}
+              text={`Выпуск от ${formatDate(issue.date)}`}
+            />
+          </>
+        )}
+      </Navbar>
+      <Box sx={{ padding: "1rem", flexGrow: 1, display: "flex" }}>
         <Outlet />
       </Box>
-      <Box sx={{ bgcolor: "white", padding: "1rem" }}>
+      <Box
+        sx={{
+          bgcolor: "white",
+          padding: "1rem",
+          borderTop: "1px lightgrey dashed",
+        }}
+      >
         <Typography variant="caption" display="block" gutterBottom>
           Редакция
         </Typography>

@@ -7,67 +7,57 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import shortid from "shortid";
-import Newspaper from "../components/Newspaper";
-
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
+import NewspaperCard from "../components/NewspaperCard";
+import NewspaperContext from "../context/NewspaperContext";
 
 export default function Newspapers() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(null);
-  const [newspapers, setNewspapers] = useState([]);
+  const [description, setDescription] = useState(null);
+  const { newspapers, addNewspaper, deleteNewspaper } =
+    useContext(NewspaperContext);
 
   function handleAddNewspaper() {
-    setNewspapers([...newspapers, { id: shortid.generate(), name }]);
+    const newspaper = { id: shortid.generate(), name, description, issues: [] };
+
+    addNewspaper(newspaper);
 
     handleClose();
   }
 
   function handleDeleteNewspaper(e) {
-    const tempNewspapers = [...newspapers];
-
     const currentId = e.currentTarget.id;
-    const deletedNewspaperIndex = newspapers.findIndex(
-      ({ id }) => id === currentId
-    );
-    tempNewspapers.splice(deletedNewspaperIndex, 1);
+    deleteNewspaper(currentId);
+  }
 
-    setNewspapers(tempNewspapers);
+  function handleOpen() {
+    setOpen(true);
   }
 
   function handleClose() {
     setOpen(false);
     setName(null);
+    setDescription(null);
   }
 
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container direction="row" spacing={2} alignItems="stretch">
           {newspapers.map((newspaper) => (
-            <Newspaper
+            <NewspaperCard
               key={newspaper.id}
               {...newspaper}
               handleDeleteNewspaper={handleDeleteNewspaper}
             />
           ))}
-          <Grid item xs={4}>
-            <Item sx={{ cursor: "pointer" }} onClick={setOpen}>
-              <IconButton>
-                <AddIcon />
-                Добавить газету
-              </IconButton>
-            </Item>
+          <Grid item xs={12} sx={{ textAlign: "center", cursor: "pointer" }}>
+            <Button onClick={handleOpen} startIcon={<AddIcon />}>
+              Добавить газету
+            </Button>
           </Grid>
         </Grid>
       </Box>
@@ -84,7 +74,23 @@ export default function Newspapers() {
             fullWidth
             variant="standard"
             value={name}
+            maxlength={3}
+            inputProps={{
+              maxLength: 32,
+            }}
             onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Описание газеты"
+            fullWidth
+            variant="standard"
+            value={description}
+            maxlength={3}
+            inputProps={{
+              maxLength: 64,
+            }}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
