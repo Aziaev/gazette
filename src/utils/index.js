@@ -1,5 +1,4 @@
 import { format, isValid } from "date-fns";
-import draftToHtml from "draftjs-to-html";
 import shortId from "shortid";
 
 export function formatDate(date) {
@@ -34,6 +33,28 @@ export function findIndexInArray(arr, itemId) {
   return arr.findIndex(({ id }) => itemId === id);
 }
 
-export function convertRawToHtml(draft) {
-  return draftToHtml(draft);
+export function getGridConfig(articlesLength, columns) {
+  const columnsConfig = {
+    0: {},
+    1: {
+      colSize: 12,
+    },
+    2: {
+      colSize: 6,
+    },
+    3: {
+      colSize: 4,
+    },
+    4: {
+      colSize: 3,
+    },
+    5: {
+      gridSize: 15,
+      colSize: 3,
+    },
+  };
+
+  return articlesLength <= columns
+    ? columnsConfig[articlesLength]
+    : columnsConfig[columns];
 }

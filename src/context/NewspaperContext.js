@@ -13,6 +13,7 @@ const NewspaperContext = createContext({
 
   addIssue(issue) {},
   findIssueByIds(newspaperId, issueId) {},
+  findIssueNumberByIds(newspaperId, issueId) {},
   updateIssue(issue) {},
   deleteIssue(issueId) {},
 });

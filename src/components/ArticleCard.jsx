@@ -8,6 +8,7 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import draftToHtml from "draftjs-to-html";
+import "../assets/css/articleCard.css";
 
 export default function ArticleCard(props) {
   const { article, size, editArticle, deleteArticle } = props;
@@ -26,10 +27,9 @@ export default function ArticleCard(props) {
         height="auto"
         sx={{
           display: "flex",
-          flexDirection: "column",
-          flexGrow: 1,
-          justifyContent: "space-between",
           height: "100%",
+          flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
         <CardContent>

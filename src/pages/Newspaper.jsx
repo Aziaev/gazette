@@ -36,11 +36,11 @@ export default function Newspaper() {
       const clonedIssue = clone(issue);
       updateIssue(clonedIssue);
     } else {
-      const articles = [];
+      const pages = [{ articles: [] }];
       addIssue({
         ...issue,
         id: shortid.generate(),
-        articles,
+        pages,
         newspaperId,
       });
     }

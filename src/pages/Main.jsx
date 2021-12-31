@@ -13,9 +13,11 @@ export default function Main() {
   const { pathname } = useLocation();
 
   const { newspaperId, issueId } = useParams();
-  const { findNewspaperById, findIssueByIds } = useContext(NewspaperContext);
+  const { findNewspaperById, findIssueByIds, findIssueNumberByIds } =
+    useContext(NewspaperContext);
   const newspaper = findNewspaperById(newspaperId);
   const issue = findIssueByIds(newspaperId, issueId);
+  const issueNumber = findIssueNumberByIds(newspaperId, issueId);
 
   const isMainRoute = pathname === Main.route;
   const isNewspaperRoute = newspaperId && !issueId;
@@ -44,7 +46,7 @@ export default function Main() {
             <NavSplitter />
             <NavItem
               isRouteActive={issueId}
-              text={`Номер от ${formatDate(issue.date)}`}
+              text={`Выпуск №${issueNumber} от ${formatDate(issue.date)}`}
             />
           </>
         )}
@@ -60,7 +62,9 @@ export default function Main() {
         }}
       >
         <Typography variant="caption" display="block" gutterBottom>
-          Редакция
+          {issue
+            ? `Выпуск №${issueNumber} от ${formatDate(issue.date)}`
+            : "Редакция"}
         </Typography>
       </Box>
     </>

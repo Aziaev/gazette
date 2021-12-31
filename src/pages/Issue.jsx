@@ -8,55 +8,31 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import { useContext, useState } from "react";
+import { Editor } from "react-draft-wysiwyg";
 import { useParams } from "react-router-dom";
 import ArticleCard from "../components/ArticleCard";
 import NewspaperContext from "../context/NewspaperContext";
 import {
   clone,
   deleteArrayItemById,
-  convertEditorStateToHtml,
   findIndexInArray,
   formatDate,
   getEmptyArticle,
+  getGridConfig,
 } from "../utils";
-
-import { convertToRaw } from "draft-js";
-import { EditorState } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
-import { convertFromRaw, convertFromHTML } from "draft-js";
-// import draftToHtml from "draftjs-to-html";
-// import htmlToDraft from "html-to-draftjs";
-
-const columnsConfig = {
-  0: {},
-  1: {
-    colSize: 12,
-  },
-  2: {
-    colSize: 6,
-  },
-  3: {
-    colSize: 4,
-  },
-  4: {
-    colSize: 3,
-  },
-  5: {
-    gridSize: 15,
-    colSize: 3,
-  },
-};
 
 export default function Issue() {
   const { newspaperId, issueId } = useParams();
   const { findIssueByIds, updateIssue } = useContext(NewspaperContext);
   const [editedArticle, setEditedArticle] = useState(null);
+  const [activePage, setActivePage] = useState(0);
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
   const issue = findIssueByIds(newspaperId, issueId);
-  const { articles, columns } = issue;
+  const { pages, columns } = issue;
 
   function handleClose() {
     setEditedArticle(null);
@@ -64,18 +40,18 @@ export default function Issue() {
 
   function addArticle() {
     const clonedIssue = clone(issue);
-    const { articles } = clonedIssue;
 
-    if (displayAddButton) {
-      clonedIssue.articles = [...articles, getEmptyArticle()];
-      updateIssue(clonedIssue);
-    }
+    clonedIssue.pages[activePage].articles = [
+      ...clonedIssue.pages[activePage].articles,
+      getEmptyArticle(),
+    ];
+    updateIssue(clonedIssue);
   }
 
   function deleteArticle(article) {
     const clonedIssue = clone(issue);
 
-    deleteArrayItemById(clonedIssue.articles, article.id);
+    deleteArrayItemById(clonedIssue.pages[activePage].articles, article.id);
 
     updateIssue(clonedIssue);
   }
@@ -83,14 +59,10 @@ export default function Issue() {
   function editArticle(article) {
     const clonedArticle = clone(article);
     if (clonedArticle.text) {
-      try {
-        const contentState = convertFromRaw(clonedArticle.text);
-        const editorState = EditorState.createWithContent(contentState);
+      const contentState = convertFromRaw(clonedArticle.text);
+      const editorState = EditorState.createWithContent(contentState);
 
-        setEditorState(editorState);
-      } catch (e) {
-        console.log(e);
-      }
+      setEditorState(editorState);
     }
     setEditedArticle(clonedArticle);
   }
@@ -105,11 +77,11 @@ export default function Issue() {
     const clonedIssue = clone(issue);
 
     const articleIndex = findIndexInArray(
-      clonedIssue.articles,
+      clonedIssue.pages[activePage].articles,
       editedArticle.id
     );
 
-    clonedIssue.articles[articleIndex] = {
+    clonedIssue.pages[activePage].articles[articleIndex] = {
       ...editedArticle,
       text: convertToRaw(editorState.getCurrentContent()),
     };
@@ -117,6 +89,19 @@ export default function Issue() {
     updateIssue(clonedIssue);
     setEditedArticle(null);
     setEditorState(() => EditorState.createEmpty());
+  }
+
+  function togglePage(e) {
+    const page = e.target.id;
+    setActivePage(page);
+  }
+
+  function addPageButtonHandler() {
+    const clonedIssue = clone(issue);
+    const { pages } = clonedIssue;
+
+    clonedIssue.pages = [...pages, { articles: [] }];
+    updateIssue(clonedIssue);
   }
 
   if (!issue) {
@@ -127,11 +112,15 @@ export default function Issue() {
     );
   }
 
-  const displayAddButton = articles.length < columns;
-
   return (
     <>
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Box sx={{ mb: "1rem" }}>
           <Typography variant="p" gutterBottom component="div">
             Номер от {formatDate(issue.date)}
@@ -146,68 +135,112 @@ export default function Issue() {
           spacing={2}
           alignItems="stretch"
           sx={{ flexGrow: 1 }}
-          columns={columnsConfig[articles.length].gridSize}
+          columns={
+            getGridConfig(pages[activePage].articles.length, columns).gridSize
+          }
         >
-          {articles.map((article, index) => (
+          {pages[activePage].articles.map((article, index) => (
             <ArticleCard
               key={index}
-              size={columnsConfig[articles.length].colSize}
+              size={
+                getGridConfig(pages[activePage].articles.length, columns)
+                  .colSize
+              }
               article={article}
               deleteArticle={deleteArticle}
               editArticle={editArticle}
             />
           ))}
-          {displayAddButton && (
-            <Grid item xs={12} sx={{ textAlign: "center", cursor: "pointer" }}>
-              <Button onClick={addArticle} startIcon={<AddIcon />}>
-                Добавить колонку
-              </Button>
-            </Grid>
-          )}
+          <Grid item xs={12} sx={{ textAlign: "center", cursor: "pointer" }}>
+            <Button onClick={addArticle} startIcon={<AddIcon />}>
+              Добавить статью
+            </Button>
+          </Grid>
         </Grid>
+        <Box sx={{ mt: "1rem" }}>
+          {pages.map((page, index) => (
+            <Button
+              key={index}
+              id={index}
+              variant={
+                String(activePage) === String(index) ? "outlined" : undefined
+              }
+              size="small"
+              sx={{ mr: 1 }}
+              onClick={togglePage}
+            >
+              Страница {index + 1}
+            </Button>
+          ))}
+          {pages.length < 10 && (
+            <Button size="small" onClick={addPageButtonHandler}>
+              + Добавить страницу
+            </Button>
+          )}
+        </Box>
       </Box>
-      <Dialog
-        maxWidth="lg"
-        fullWidth
-        onClose={handleClose}
-        open={!!editedArticle}
-      >
-        <DialogTitle>Редактирование статьи</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            label="Заголовок статьи"
-            fullWidth
-            variant="standard"
-            name="headline"
-            inputProps={{
-              maxLength: 32,
-            }}
-            value={(editedArticle && editedArticle.headline) || ""}
-            onChange={handleChange}
-          />
-          <Box
-            sx={{
-              mt: "2rem",
-              border: "1px lightgrey dashed",
-            }}
-          >
-            <Editor
-              wrapperClassName="wrapper-class"
-              editorClassName="editor-class"
-              toolbarClassName="toolbar-class"
-              editorState={editorState}
-              onEditorStateChange={setEditorState}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Отменить</Button>
-          <Button onClick={handleSave}>Сохранить</Button>
-        </DialogActions>
-      </Dialog>
+      <EditIssueDialog
+        editedArticle={editedArticle}
+        editorState={editorState}
+        setEditorState={setEditorState}
+        handleClose={handleClose}
+        handleChange={handleChange}
+        handleSave={handleSave}
+      />
     </>
   );
 }
 
 Issue.route = "issue";
+
+function EditIssueDialog({
+  editedArticle,
+  editorState,
+  setEditorState,
+  handleClose,
+  handleChange,
+  handleSave,
+}) {
+  return (
+    <Dialog
+      maxWidth="lg"
+      fullWidth
+      onClose={handleClose}
+      open={!!editedArticle}
+    >
+      <DialogTitle>Редактирование статьи</DialogTitle>
+      <DialogContent>
+        <TextField
+          margin="dense"
+          label="Заголовок статьи"
+          fullWidth
+          variant="standard"
+          name="headline"
+          inputProps={{
+            maxLength: 32,
+          }}
+          value={(editedArticle && editedArticle.headline) || ""}
+          onChange={handleChange}
+        />
+        <Box
+          sx={{
+            mt: "2rem",
+            border: "1px lightgrey dashed",
+          }}
+        >
+          <Editor
+            wrapperClassName="wrapper-class"
+            editorClassName="editor-class"
+            toolbarClassName="toolbar-class"
+            editorState={editorState}
+            onEditorStateChange={setEditorState}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Отменить</Button>
+        <Button onClick={handleSave}>Сохранить</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}

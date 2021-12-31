@@ -43,10 +43,7 @@ function Layout() {
   return (
     <>
       <CssBaseline />
-      <Container
-        maxWidth="lg"
-        sx={{ backgroundColor: "rgb(231 235 240 / 60%)" }}
-      >
+      <Container maxWidth="xl" disableGutters>
         <Box sx={{ height: "100vh" }} display="flex" flexDirection="column">
           <AppRoutes />
         </Box>

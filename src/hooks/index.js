@@ -85,18 +85,27 @@ export default function useNewspaperProvider() {
     return newspaper && newspaper.issues.find(({ id }) => issueId === id);
   }
 
+  function findIssueNumberByIds(newspaperId, issueId) {
+    const newspaper = findNewspaperById(newspaperId);
+
+    const number =
+      newspaper && newspaper.issues.findIndex(({ id }) => issueId === id);
+
+    return number + 1;
+  }
+
   return {
     newspapers,
-
-    findNewspaperById,
-    findIssueByIds,
 
     addNewspaper,
     updateNewspaper,
     deleteNewspaper,
+    findNewspaperById,
 
     addIssue,
     updateIssue,
     deleteIssue,
+    findIssueByIds,
+    findIssueNumberByIds,
   };
 }
