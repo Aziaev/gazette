@@ -5,23 +5,26 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import { useContext, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useParams } from "react-router-dom";
-import ArticleCard from "../components/ArticleCard";
+import shortId from "shortid";
+import Article from "../components/Article";
 import NewspaperContext from "../context/NewspaperContext";
 import {
   clone,
   deleteArrayItemById,
   findIndexInArray,
   formatDate,
-  getEmptyArticle,
-  getGridConfig,
 } from "../utils";
+
+const defaultArticle = {
+  headline: "",
+  text: "",
+};
 
 export default function Issue() {
   const { newspaperId, issueId } = useParams();
@@ -39,13 +42,8 @@ export default function Issue() {
   }
 
   function addArticle() {
-    const clonedIssue = clone(issue);
-
-    clonedIssue.pages[activePage].articles = [
-      ...clonedIssue.pages[activePage].articles,
-      getEmptyArticle(),
-    ];
-    updateIssue(clonedIssue);
+    setEditedArticle(defaultArticle);
+    setEditorState(EditorState.createEmpty());
   }
 
   function deleteArticle(article) {
@@ -76,15 +74,26 @@ export default function Issue() {
   function handleSave() {
     const clonedIssue = clone(issue);
 
-    const articleIndex = findIndexInArray(
-      clonedIssue.pages[activePage].articles,
-      editedArticle.id
-    );
+    if (editedArticle.id) {
+      const articleIndex = findIndexInArray(
+        clonedIssue.pages[activePage].articles,
+        editedArticle.id
+      );
 
-    clonedIssue.pages[activePage].articles[articleIndex] = {
-      ...editedArticle,
-      text: convertToRaw(editorState.getCurrentContent()),
-    };
+      clonedIssue.pages[activePage].articles[articleIndex] = {
+        ...editedArticle,
+        text: convertToRaw(editorState.getCurrentContent()),
+      };
+    } else {
+      clonedIssue.pages[activePage].articles = [
+        ...clonedIssue.pages[activePage].articles,
+        {
+          ...editedArticle,
+          id: shortId.generate(),
+          text: convertToRaw(editorState.getCurrentContent()),
+        },
+      ];
+    }
 
     updateIssue(clonedIssue);
     setEditedArticle(null);
@@ -125,38 +134,25 @@ export default function Issue() {
           <Typography variant="p" gutterBottom component="div">
             Номер от {formatDate(issue.date)}
           </Typography>
-          <Typography variant="h3" gutterBottom component="div">
-            {issue.name}
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h3" gutterBottom component="div">
+              {issue.name}
+            </Typography>
+            <Button onClick={addArticle} startIcon={<AddIcon />}>
+              Добавить статью
+            </Button>
+          </Box>
         </Box>
-        <Grid
-          container
-          direction="row"
-          spacing={2}
-          alignItems="stretch"
-          sx={{ flexGrow: 1 }}
-          columns={
-            getGridConfig(pages[activePage].articles.length, columns).gridSize
-          }
-        >
+        <Box sx={{ columnCount: columns, flexGrow: 1, height: "100%" }}>
           {pages[activePage].articles.map((article, index) => (
-            <ArticleCard
+            <Article
               key={index}
-              size={
-                getGridConfig(pages[activePage].articles.length, columns)
-                  .colSize
-              }
               article={article}
               deleteArticle={deleteArticle}
               editArticle={editArticle}
             />
           ))}
-          <Grid item xs={12} sx={{ textAlign: "center", cursor: "pointer" }}>
-            <Button onClick={addArticle} startIcon={<AddIcon />}>
-              Добавить статью
-            </Button>
-          </Grid>
-        </Grid>
+        </Box>
         <Box sx={{ mt: "1rem" }}>
           {pages.map((page, index) => (
             <Button
