@@ -143,7 +143,14 @@ export default function Issue() {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ columnCount: columns, flexGrow: 1, height: "100%" }}>
+        <Box
+          sx={{
+            columnCount: columns,
+            flexGrow: 1,
+            height: "100%",
+            columnFill: "auto",
+          }}
+        >
           {pages[activePage].articles.map((article, index) => (
             <Article
               key={index}
