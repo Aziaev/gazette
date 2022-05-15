@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
+import { useLocalstorage } from "../utils";
 
 /**
  * Контекст для работы со списком газет.
@@ -17,34 +18,6 @@ const NewspaperContext = createContext({
   updateIssue(issue) {},
   deleteIssue(issueId) {},
 });
-
-const getParsedLocalstorageData = (key) => {
-  let value = [];
-
-  try {
-    value = JSON.parse(localStorage.getItem(key));
-  } catch (e) {
-    console.info("cannot parse localStorage, return empty object");
-  }
-
-  return value;
-};
-
-const setLocalstorageData = (key, data) => {
-  localStorage.setItem(key, JSON.stringify(data));
-};
-
-const useLocalstorage = (key) => {
-  const [value, setValue] = useState(getParsedLocalstorageData(key) || []);
-
-  const saveDataToLocalStorage = (data) => {
-    setLocalstorageData(key, data);
-
-    setValue(data);
-  };
-
-  return [value, saveDataToLocalStorage];
-};
 
 export const NewspaperContextProvider = ({ children }) => {
   const [newspapers, setNewspapers] = useLocalstorage("newspapers");

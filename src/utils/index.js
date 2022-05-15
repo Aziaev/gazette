@@ -1,4 +1,5 @@
 import { format, isValid } from "date-fns";
+import { useState } from "react";
 
 export function formatDate(date) {
   if (!isValid) {
@@ -22,3 +23,31 @@ export function deleteArrayItemById(arr, itemId) {
 export function findIndexInArray(arr, itemId) {
   return arr.findIndex(({ id }) => itemId === id);
 }
+
+const getParsedLocalstorageData = (key) => {
+  let value = [];
+
+  try {
+    value = JSON.parse(localStorage.getItem(key));
+  } catch (e) {
+    console.info("cannot parse localStorage, return empty object");
+  }
+
+  return value;
+};
+
+const setLocalstorageData = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+export const useLocalstorage = (key) => {
+  const [value, setValue] = useState(getParsedLocalstorageData(key) || []);
+
+  const saveDataToLocalStorage = (data) => {
+    setLocalstorageData(key, data);
+
+    setValue(data);
+  };
+
+  return [value, saveDataToLocalStorage];
+};
