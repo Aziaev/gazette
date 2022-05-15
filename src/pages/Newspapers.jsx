@@ -8,10 +8,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import shortid from "shortid";
 import NewspaperCard from "../components/NewspaperCard";
-import NewspaperContext from "../context/NewspaperContext";
+import { useNewspaperContext } from "../context/NewspaperContext";
 import { clone } from "../utils";
 
 export default function Newspapers() {
@@ -21,7 +21,7 @@ export default function Newspapers() {
     deleteNewspaper,
     updateNewspaper,
     findNewspaperById,
-  } = useContext(NewspaperContext);
+  } = useNewspaperContext();
   const [newspaper, setNewspaper] = useState(false);
 
   function handleSave() {

@@ -5,8 +5,7 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import NewspaperContext from "./context/NewspaperContext";
-import useNewspaperProvider from "./hooks";
+import { NewspaperContextProvider } from "./context/NewspaperContext";
 import Issue from "./pages/Issue";
 import Main from "./pages/Main";
 import Newspaper from "./pages/Newspaper";
@@ -56,13 +55,11 @@ function Layout() {
  * Подключение контекста данных.
  */
 export default function App() {
-  const newspaperProviderValue = useNewspaperProvider();
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <NewspaperContext.Provider value={newspaperProviderValue}>
+      <NewspaperContextProvider>
         <Layout />
-      </NewspaperContext.Provider>
+      </NewspaperContextProvider>
     </LocalizationProvider>
   );
 }

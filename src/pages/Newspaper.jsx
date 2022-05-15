@@ -13,11 +13,11 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { format } from "date-fns";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import shortid from "shortid";
 import IssueCard from "../components/IssueCard";
-import NewspaperContext from "../context/NewspaperContext";
+import { useNewspaperContext } from "../context/NewspaperContext";
 import { clone } from "../utils";
 
 const defaultDate = format(new Date(), "yyyy-MM-dd");
@@ -25,7 +25,7 @@ const defaultColumns = 3;
 
 export default function Newspaper() {
   const { findNewspaperById, addIssue, updateIssue, deleteIssue } =
-    useContext(NewspaperContext);
+    useNewspaperContext();
   const { newspaperId, issueId } = useParams();
   const newspaper = findNewspaperById(newspaperId);
 

@@ -43,7 +43,7 @@ export default function Article(props) {
         <Typography
           variant="h5"
           component="div"
-          sx={!article.headline && { color: "lightgrey" }}
+          sx={!article.headline ? { color: "lightgrey" } : {}}
         >
           {article.headline || "Нет заголовка"}
         </Typography>

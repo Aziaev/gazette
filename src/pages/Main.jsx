@@ -1,11 +1,10 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import NavItem from "../components/NavItem";
 import NavSplitter from "../components/NavSplitter";
-import NewspaperContext from "../context/NewspaperContext";
+import { useNewspaperContext } from "../context/NewspaperContext";
 import { formatDate } from "../utils";
 import Newspaper from "./Newspaper";
 
@@ -14,7 +13,7 @@ export default function Main() {
 
   const { newspaperId, issueId } = useParams();
   const { findNewspaperById, findIssueByIds, findIssueNumberByIds } =
-    useContext(NewspaperContext);
+    useNewspaperContext();
   const newspaper = findNewspaperById(newspaperId);
   const issue = findIssueByIds(newspaperId, issueId);
   const issueNumber = findIssueNumberByIds(newspaperId, issueId);

@@ -8,12 +8,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useParams } from "react-router-dom";
 import shortId from "shortid";
 import Article from "../components/Article";
-import NewspaperContext from "../context/NewspaperContext";
+import { useNewspaperContext } from "../context/NewspaperContext";
 import {
   clone,
   deleteArrayItemById,
@@ -28,7 +28,7 @@ const defaultArticle = {
 
 export default function Issue() {
   const { newspaperId, issueId } = useParams();
-  const { findIssueByIds, updateIssue } = useContext(NewspaperContext);
+  const { findIssueByIds, updateIssue } = useNewspaperContext();
   const [editedArticle, setEditedArticle] = useState(null);
   const [activePage, setActivePage] = useState(0);
   const [editorState, setEditorState] = useState(() =>
@@ -237,6 +237,18 @@ function EditIssueDialog({
             toolbarClassName="toolbar-class"
             editorState={editorState}
             onEditorStateChange={setEditorState}
+            toolbar={{
+              options: [
+                "inline",
+                "blockType",
+                "list",
+                "textAlign",
+                "colorPicker",
+                "link",
+                "remove",
+                "history",
+              ],
+            }}
           />
         </Box>
       </DialogContent>
