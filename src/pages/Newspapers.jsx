@@ -127,4 +127,4 @@ export default function Newspapers() {
   );
 }
 
-Newspapers.route = "/newspapers";
+Newspapers.route = "newspapers";

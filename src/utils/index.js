@@ -41,7 +41,7 @@ const setLocalstorageData = (key, data) => {
 };
 
 export const useLocalstorage = (key) => {
-  const [value, setValue] = useState(getParsedLocalstorageData(key) || []);
+  const [value, setValue] = useState(getParsedLocalstorageData(key));
 
   const saveDataToLocalStorage = (data) => {
     setLocalstorageData(key, data);

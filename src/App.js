@@ -4,50 +4,47 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { NewspaperContextProvider } from "./context/NewspaperContext";
+import { UserContextProvider } from "./context/UserContext";
+import { UsersContextProvider } from "./context/UsersContext";
+import { CheckAuth } from "./pages/CheckAuth";
 import Issue from "./pages/Issue";
-import Main from "./pages/Main";
+import Layout from "./pages/Layout";
+import Login from "./pages/Login";
+import { Main } from "./pages/Main";
 import Newspaper from "./pages/Newspaper";
 import Newspapers from "./pages/Newspapers";
+import Register from "./pages/Register";
+import Tasks from "./pages/Tasks";
+import Users from "./pages/Users";
 
 /**
  * Роуты приложения.
  */
 function AppRoutes() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
-        <Route path="/" element={<Main />}>
-          <Route index element={<Newspapers />} />
-          <Route
-            path={`/${Newspaper.route}/:newspaperId`}
-            element={<Newspaper />}
-          >
-            <Route
-              path={`/${Newspaper.route}/:newspaperId/${Issue.route}/:issueId`}
-              element={<Issue />}
-            />
+        <Route element={<Layout />}>
+          <Route path={Login.route} element={<Login />} />
+          <Route path={Register.route} element={<Register />} />
+          <Route path="/" element={<CheckAuth />}>
+            <Route path={Newspapers.route} element={<Newspapers />}>
+              <Route
+                path={`${Newspaper.route}/:newspaperId`}
+                element={<Newspaper />}
+              >
+                <Route path={`${Issue.route}/:issueId`} element={<Issue />} />
+              </Route>
+            </Route>
+            <Route path={Tasks.route} element={<Tasks />} />
+            <Route path={Users.route} element={<Users />} />
+            <Route index element={<Main />} />
           </Route>
         </Route>
       </Routes>
-    </BrowserRouter>
-  );
-}
-
-/**
- * Базовая верстка страницы.
- */
-function Layout() {
-  return (
-    <>
-      <CssBaseline />
-      <Container maxWidth="xl" disableGutters>
-        <Box sx={{ height: "100vh" }} display="flex" flexDirection="column">
-          <AppRoutes />
-        </Box>
-      </Container>
-    </>
+    </HashRouter>
   );
 }
 
@@ -57,9 +54,22 @@ function Layout() {
 export default function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <NewspaperContextProvider>
-        <Layout />
-      </NewspaperContextProvider>
+      <UsersContextProvider>
+        <UserContextProvider>
+          <NewspaperContextProvider>
+            <CssBaseline />
+            <Container maxWidth="xl" disableGutters>
+              <Box
+                sx={{ height: "100vh" }}
+                display="flex"
+                flexDirection="column"
+              >
+                <AppRoutes />
+              </Box>
+            </Container>
+          </NewspaperContextProvider>
+        </UserContextProvider>
+      </UsersContextProvider>
     </LocalizationProvider>
   );
 }

@@ -10,6 +10,7 @@ export default function Navbar({ children }) {
         borderBottom: "1px lightgrey dashed",
       }}
       display="flex"
+      justifyContent="space-between"
       flexDirection="row"
     >
       {children}

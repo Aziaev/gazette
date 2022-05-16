@@ -28,12 +28,12 @@ export const NewspaperContextProvider = ({ children }) => {
   }
 
   function findNewspaperById(newspaperId) {
-    return newspapers.find(({ id }) => newspaperId === id);
+    return (newspapers || []).find(({ id }) => newspaperId === id);
   }
 
   // CRUD газет
   function addNewspaper(newspaper) {
-    setNewspapers([...newspapers, newspaper]);
+    setNewspapers([...(newspapers || []), newspaper]);
   }
 
   function updateNewspaper(newspaper) {
@@ -116,7 +116,7 @@ export const NewspaperContextProvider = ({ children }) => {
   return (
     <NewspaperContext.Provider
       value={{
-        newspapers,
+        newspapers: newspapers || [],
 
         addNewspaper,
         updateNewspaper,

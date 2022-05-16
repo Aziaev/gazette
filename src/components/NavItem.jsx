@@ -15,7 +15,12 @@ export default function NavItem(props) {
       }}
       onClick={isRouteActive ? undefined : () => navigate(path)}
     >
-      <Typography variant={variant} gutterBottom component="div">
+      <Typography
+        variant={variant}
+        gutterBottom
+        component="div"
+        sx={{ margin: 0 }}
+      >
         {text}
       </Typography>
     </Link>
