@@ -42,6 +42,12 @@ export default function UserButton() {
           "aria-labelledby": "basic-button",
         }}
       >
+        <MenuItem>
+          <ListItemIcon>
+            <AccountCircleIcon fontSize="small" />
+          </ListItemIcon>
+          {user.name} ({user.email})
+        </MenuItem>
         <MenuItem onClick={handleClick}>
           <ListItemIcon>
             <Logout fontSize="small" />

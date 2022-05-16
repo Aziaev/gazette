@@ -7,7 +7,7 @@ import NavSplitter from "../components/NavSplitter";
 import UserButton from "../components/UserButton";
 import { useNewspaperContext } from "../context/NewspaperContext";
 import { formatDate } from "../utils";
-import Newspaper from "./Newspaper";
+import Newspapers from "./Newspapers";
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -18,6 +18,7 @@ export default function Layout() {
   const issue = findIssueByIds(newspaperId, issueId);
   const issueNumber = findIssueNumberByIds(newspaperId, issueId);
   const isMainRoute = pathname === Layout.route;
+  const isNewspapersRoute = pathname === `/${Newspapers.route}`;
   const isNewspaperRoute = newspaperId && !issueId;
 
   return (
@@ -30,12 +31,22 @@ export default function Layout() {
             path={Layout.route}
             text="Издательство"
           />
+          {(isNewspapersRoute || (newspaper && newspaperId)) && (
+            <>
+              <NavSplitter />
+              <NavItem
+                isRouteActive={isNewspapersRoute}
+                path={`${Newspapers.route}`}
+                text="Газеты"
+              />
+            </>
+          )}
           {newspaper && newspaperId && (
             <>
               <NavSplitter />
               <NavItem
                 isRouteActive={isNewspaperRoute}
-                path={`/${Newspaper.route}/${newspaperId}`}
+                path={`${Newspapers.route}/${newspaperId}`}
                 text={`Газета "${newspaper.name}"`}
               />
             </>

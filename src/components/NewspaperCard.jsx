@@ -7,7 +7,6 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import Newspaper from "../pages/Newspaper";
 
 export default function NewspaperCard(props) {
   const { id, name, description, handleDeleteNewspaper, handleEditNewspaper } =
@@ -16,7 +15,7 @@ export default function NewspaperCard(props) {
 
   function handleOpenNewspaper(e) {
     const id = e.currentTarget.id;
-    navigate(`/${Newspaper.route}/${id}`);
+    navigate(`${id}`);
   }
 
   return (

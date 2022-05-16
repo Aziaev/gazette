@@ -8,12 +8,11 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import Issue from "../pages/Issue";
-import Newspaper from "../pages/Newspaper";
 import { formatDate } from "../utils";
 
 export default function IssueCard(props) {
   const {
-    issue: { id, name, description, date, newspaperId },
+    issue: { id, name, description, date },
     handleEditIssue,
     handleDeleteIssue,
   } = props;
@@ -21,7 +20,7 @@ export default function IssueCard(props) {
 
   function handleOpenNewspaper(e) {
     const id = e.currentTarget.id;
-    navigate(`/${Newspaper.route}/${newspaperId}/${Issue.route}/${id}`);
+    navigate(`${Issue.route}/${id}`);
   }
 
   return (
