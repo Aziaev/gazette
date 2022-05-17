@@ -40,6 +40,7 @@ export const UsersContextProvider = ({ children }) => {
   }
 
   function deleteUser(userId) {
+    console.log(userId);
     const tempUsers = [...users];
 
     const userIndex = findUserIndex(userId);
