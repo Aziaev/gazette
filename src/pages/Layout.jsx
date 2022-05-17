@@ -1,13 +1,15 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Outlet, useLocation, useParams } from "react-router-dom";
+import Breadcrumb from "../components/Breadcrumb";
 import Navbar from "../components/Navbar";
 import NavItem from "../components/NavItem";
-import NavSplitter from "../components/NavSplitter";
 import UserButton from "../components/UserButton";
 import { useNewspaperContext } from "../context/NewspaperContext";
 import { formatDate } from "../utils";
 import Newspapers from "./Newspapers";
+import Tasks from "./Tasks";
+import Users from "./Users";
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -20,6 +22,8 @@ export default function Layout() {
   const isMainRoute = pathname === Layout.route;
   const isNewspapersRoute = pathname === `/${Newspapers.route}`;
   const isNewspaperRoute = newspaperId && !issueId;
+  const isTasksRoute = pathname === `/${Tasks.route}`;
+  const isUsersRoute = pathname === `/${Users.route}`;
 
   return (
     <>
@@ -31,34 +35,40 @@ export default function Layout() {
             path={Layout.route}
             text="Издательство"
           />
+          {isUsersRoute && (
+            <Breadcrumb
+              path={Users.route}
+              text="Пользователи"
+              isRouteActive={isUsersRoute}
+            />
+          )}
+          {isTasksRoute && (
+            <Breadcrumb
+              path={Tasks.route}
+              text="Задачи"
+              isRouteActive={isTasksRoute}
+            />
+          )}
           {(isNewspapersRoute || (newspaper && newspaperId)) && (
-            <>
-              <NavSplitter />
-              <NavItem
-                isRouteActive={isNewspapersRoute}
-                path={`${Newspapers.route}`}
-                text="Газеты"
-              />
-            </>
+            <Breadcrumb
+              path={Newspapers.route}
+              text="Газеты"
+              isRouteActive={isNewspapersRoute}
+            />
           )}
           {newspaper && newspaperId && (
-            <>
-              <NavSplitter />
-              <NavItem
-                isRouteActive={isNewspaperRoute}
-                path={`${Newspapers.route}/${newspaperId}`}
-                text={`Газета "${newspaper.name}"`}
-              />
-            </>
+            <Breadcrumb
+              path={`${Newspapers.route}/${newspaperId}`}
+              text={`Газета "${newspaper.name}"`}
+              isRouteActive={isNewspaperRoute}
+            />
           )}
           {issue && issueId && (
-            <>
-              <NavSplitter />
-              <NavItem
-                isRouteActive={issueId}
-                text={`Выпуск №${issueNumber} от ${formatDate(issue.date)}`}
-              />
-            </>
+            <Breadcrumb
+              path={`${Newspapers.route}/${newspaperId}`}
+              text={`Выпуск №${issueNumber} от ${formatDate(issue.date)}`}
+              isRouteActive={issueId}
+            />
           )}
         </Box>
         <Box>
