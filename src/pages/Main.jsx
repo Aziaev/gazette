@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import Login from "./Login";
 import Newspapers from "./Newspapers";
-import Tasks from "./Tasks";
 import Users from "./Users";
 
 export function Main() {
@@ -37,19 +36,6 @@ export function Main() {
           variant="h5"
         >
           Издания
-        </Link>
-      </Box>
-      <Box sx={{ mr: 4 }}>
-        <Link
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-
-            navigate(Tasks.route);
-          }}
-          variant="h5"
-        >
-          Задачи
         </Link>
       </Box>
       <Box>

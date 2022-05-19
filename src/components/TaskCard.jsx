@@ -1,13 +1,12 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { CardHeader, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { useRef } from "react";
 import { useDrag } from "react-dnd";
 import { TASK_STATUSES } from "../constants";
 
@@ -18,51 +17,13 @@ const STATUS_COLOR_MAP = {
 };
 
 export default function TaskCard(props) {
-  const { task, index, handleDeleteTask, handleEditTask, moveCard } = props;
+  const { task, handleDeleteTask, handleEditTask } = props;
   const { id, title, description, status, assignee, creator } = task;
-
-  const ref = useRef(null);
-
-  // const [{ handlerId }, drop] = useDrop({
-  //   accept: "card",
-  //   collect(monitor) {
-  //     return {
-  //       handlerId: monitor.getHandlerId(),
-  //     };
-  //   },
-  //   hover(item, monitor) {
-  //     if (!ref.current) {
-  //       return;
-  //     }
-  //     const dragIndex = item.index;
-  //     const hoverIndex = index;
-  //
-  //     if (dragIndex === hoverIndex) {
-  //       return;
-  //     }
-  //
-  //     const hoverBoundingRect = ref.current?.getBoundingClientRect();
-  //
-  //     const hoverMiddleY =
-  //       (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-  //     const clientOffset = monitor.getClientOffset();
-  //     const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-  //     if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-  //       return;
-  //     }
-  //     if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-  //       return;
-  //     }
-  //     moveCard(dragIndex, hoverIndex);
-  //
-  //     item.index = hoverIndex;
-  //   },
-  // });
 
   const [{ isDragging }, drag] = useDrag({
     type: "card",
     item: () => {
-      return { task, index };
+      return task;
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -71,16 +32,8 @@ export default function TaskCard(props) {
 
   const opacity = isDragging ? 0 : 1;
 
-  // drag(drop(ref));
-
   return (
-    <Card
-      height="auto"
-      sx={{ opacity }}
-      ref={drag}
-      // ref={ref}
-      // data-handler-id={handlerId}
-    >
+    <Card height="auto" sx={{ opacity }} ref={drag}>
       <CardContent>
         <Chip size="small" color={STATUS_COLOR_MAP[status]} label={status} />
         <Typography variant="h5" component="div">

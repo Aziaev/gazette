@@ -11,38 +11,20 @@ export default function KanbanBoard({
   handleDeleteTask,
   handleEditTask,
   handleOpen,
-  setTasks,
 }) {
-  console.log(tasks);
   const newTasks = getNewTasks(tasks);
   const inProgressTasks = getInProgressTasks(tasks);
   const doneTasks = getDoneTasks(tasks);
 
-  // const moveCard = useCallback(
-  //   (dragIndex, hoverIndex) => {
-  //     const newTasks = update(tasks, {
-  //       $splice: [
-  //         [dragIndex, 1],
-  //         [hoverIndex, 0, tasks[dragIndex]],
-  //       ],
-  //     });
-  //
-  //     setTasks(newTasks);
-  //   },
-  //   [tasks, setTasks]
-  // );
-
   return (
     <KanbanBoardColumns>
       <KanbanBoardColumn title="Новые задачи" status={TASK_STATUSES.new}>
-        {newTasks.map((task, index) => (
+        {newTasks.map((task) => (
           <TaskCard
             key={task.id}
-            index={index}
             task={task}
             handleDeleteTask={handleDeleteTask}
             handleEditTask={handleEditTask}
-            // moveCard={moveCard}
           />
         ))}
         <Button onClick={handleOpen} startIcon={<AddIcon />}>
@@ -50,26 +32,22 @@ export default function KanbanBoard({
         </Button>
       </KanbanBoardColumn>
       <KanbanBoardColumn title="В работе" status={TASK_STATUSES.inProgress}>
-        {inProgressTasks.map((task, index) => (
+        {inProgressTasks.map((task) => (
           <TaskCard
             key={task.id}
-            index={index}
             task={task}
             handleDeleteTask={handleDeleteTask}
             handleEditTask={handleEditTask}
-            // moveCard={moveCard}
           />
         ))}
       </KanbanBoardColumn>
       <KanbanBoardColumn title="Завершенные" status={TASK_STATUSES.done}>
-        {doneTasks.map((task, index) => (
+        {doneTasks.map((task) => (
           <TaskCard
             key={task.id}
-            index={index}
             task={task}
             handleDeleteTask={handleDeleteTask}
             handleEditTask={handleEditTask}
-            // moveCard={moveCard}
           />
         ))}
       </KanbanBoardColumn>

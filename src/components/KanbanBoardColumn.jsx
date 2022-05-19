@@ -9,7 +9,7 @@ export default function KanbanBoardColumn({ children, title, status }) {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "card",
-      drop({ task }, monitor) {
+      drop(task, monitor) {
         const didDrop = monitor.didDrop();
         if (didDrop) {
           return;

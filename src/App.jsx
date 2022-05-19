@@ -17,6 +17,7 @@ import Layout from "./pages/Layout";
 import Login from "./pages/Login";
 import { Main } from "./pages/Main";
 import Newspaper from "./pages/Newspaper";
+import NewspaperIndex from "./pages/NewspaperIndex";
 import Newspapers from "./pages/Newspapers";
 import Register from "./pages/Register";
 import Tasks from "./pages/Tasks";
@@ -36,10 +37,11 @@ function AppRoutes() {
             <Route path={Newspapers.route} element={<Outlet />}>
               <Route path={`:newspaperId`} element={<Newspaper />}>
                 <Route path={`${Issue.route}/:issueId`} element={<Issue />} />
+                <Route path={Tasks.route} element={<Tasks />} />
+                <Route index element={<NewspaperIndex />} />
               </Route>
               <Route index element={<Newspapers />} />
             </Route>
-            <Route path={Tasks.route} element={<Tasks />} />
             <Route path={Users.route} element={<Users />} />
             <Route index element={<Main />} />
           </Route>

@@ -1,7 +1,8 @@
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import * as React from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import shortid from "shortid";
 import KanbanBoard from "../components/KanbanBoard";
 import TaskEditDialog from "../components/TaskEditDialog";
@@ -17,10 +18,11 @@ const TASK_STATUSES = {
 
 export default function Tasks() {
   const [error, setError] = useState(null);
-  const { tasks, addTask, deleteTask, updateTask, findTaskById, setTasks } =
+  const { tasks, addTask, deleteTask, updateTask, findTaskById } =
     useTasksContext();
   const [task, setTask] = useState(null);
   const { user } = useUserContext();
+  const { newspaperId } = useParams();
 
   function saveTask() {
     let result = {};
@@ -33,6 +35,7 @@ export default function Tasks() {
         ...task,
         id: shortid.generate(),
         creator: user,
+        newspaperId,
         status: TASK_STATUSES.new,
       };
 
@@ -66,13 +69,17 @@ export default function Tasks() {
     setTask(null);
   }
 
+  const list = useMemo(
+    () => tasks.filter((task) => task.newspaperId === newspaperId),
+    [newspaperId, tasks]
+  );
+
   return (
     <>
       <KanbanBoard
         handleDeleteTask={handleDeleteTask}
         handleEditTask={handleEditTask}
-        tasks={tasks}
-        setTasks={setTasks}
+        tasks={list}
         handleOpen={handleOpen}
       />
       <TaskEditDialog task={task} saveTask={saveTask} setTask={setTask} />

@@ -22,7 +22,7 @@ export default function Layout() {
   const isMainRoute = pathname === Layout.route;
   const isNewspapersRoute = pathname === `/${Newspapers.route}`;
   const isNewspaperRoute = newspaperId && !issueId;
-  const isTasksRoute = pathname === `/${Tasks.route}`;
+  const isTasksRoute = pathname.includes(Tasks.route);
   const isUsersRoute = pathname === `/${Users.route}`;
 
   return (
@@ -42,13 +42,6 @@ export default function Layout() {
               isRouteActive={isUsersRoute}
             />
           )}
-          {isTasksRoute && (
-            <Breadcrumb
-              path={Tasks.route}
-              text="Задачи"
-              isRouteActive={isTasksRoute}
-            />
-          )}
           {(isNewspapersRoute || (newspaper && newspaperId)) && (
             <Breadcrumb
               path={Newspapers.route}
@@ -60,7 +53,14 @@ export default function Layout() {
             <Breadcrumb
               path={`${Newspapers.route}/${newspaperId}`}
               text={`Газета "${newspaper.name}"`}
-              isRouteActive={isNewspaperRoute}
+              isRouteActive={isNewspaperRoute && !isTasksRoute}
+            />
+          )}
+          {isTasksRoute && (
+            <Breadcrumb
+              path={Tasks.route}
+              text="Задачи"
+              isRouteActive={isTasksRoute}
             />
           )}
           {issue && issueId && (
