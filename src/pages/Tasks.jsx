@@ -1,7 +1,87 @@
+import { Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import * as React from "react";
+import { useState } from "react";
+import shortid from "shortid";
+import KanbanBoard from "../components/KanbanBoard";
+import TaskEditDialog from "../components/TaskEditDialog";
+import { useTasksContext } from "../context/TasksContext";
+import { clone } from "../utils";
+
+const TASK_STATUSES = {
+  new: "Новая",
+  inProgress: "В работе",
+  done: "Готово",
+};
 
 export default function Tasks() {
-  return <>Задачи</>;
+  const [error, setError] = useState(null);
+  const { tasks, addTask, deleteTask, updateTask, findTaskById, setTasks } =
+    useTasksContext();
+  const [task, setTask] = useState(false);
+
+  function saveTask() {
+    let result = {};
+    if (task.id) {
+      const clonedTask = clone(task);
+
+      result = updateTask(clonedTask);
+    } else {
+      const createdTask = {
+        ...task,
+        id: shortid.generate(),
+        status: TASK_STATUSES.new,
+      };
+
+      result = addTask(createdTask);
+    }
+
+    if (result.error) {
+      setError(result.error);
+    } else {
+      handleClose();
+    }
+  }
+
+  function handleDeleteTask(e) {
+    const currentId = e.currentTarget.id;
+    deleteTask(currentId);
+  }
+
+  function handleEditTask(e) {
+    const currentId = e.currentTarget.id;
+    const task = findTaskById(currentId);
+    const clonedTask = clone(task);
+    setTask(clonedTask);
+  }
+
+  function handleOpen() {
+    setTask({});
+  }
+
+  function handleClose() {
+    setTask(null);
+  }
+
+  return (
+    <>
+      <KanbanBoard
+        handleDeleteTask={handleDeleteTask}
+        handleEditTask={handleEditTask}
+        tasks={tasks}
+        setTasks={setTasks}
+        handleOpen={handleOpen}
+      />
+      <TaskEditDialog task={task} saveTask={saveTask} setTask={setTask} />
+      <Snackbar
+        open={!!error}
+        autoHideDuration={1500}
+        onClose={() => setError(null)}
+      >
+        <MuiAlert severity="error">{error}</MuiAlert>
+      </Snackbar>
+    </>
+  );
 }
 
 Tasks.route = "tasks";

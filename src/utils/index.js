@@ -1,5 +1,5 @@
 import { format, isValid } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function formatDate(date) {
   if (!isValid) {
@@ -43,13 +43,11 @@ const setLocalstorageData = (key, data) => {
 export const useLocalstorage = (key) => {
   const [value, setValue] = useState(getParsedLocalstorageData(key));
 
-  const saveDataToLocalStorage = (data) => {
-    setLocalstorageData(key, data);
+  useEffect(() => {
+    setLocalstorageData(key, value);
+  }, [key, value]);
 
-    setValue(data);
-  };
-
-  return [value, saveDataToLocalStorage];
+  return [value, setValue];
 };
 
 export function stringToColor(string) {

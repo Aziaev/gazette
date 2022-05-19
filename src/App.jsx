@@ -4,8 +4,11 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import React from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { HashRouter, Outlet, Route, Routes } from "react-router-dom";
 import { NewspaperContextProvider } from "./context/NewspaperContext";
+import { TasksContextProvider } from "./context/TasksContext";
 import { UserContextProvider } from "./context/UserContext";
 import { UsersContextProvider } from "./context/UsersContext";
 import { CheckAuth } from "./pages/CheckAuth";
@@ -55,16 +58,20 @@ export default function App() {
       <UsersContextProvider>
         <UserContextProvider>
           <NewspaperContextProvider>
-            <CssBaseline />
-            <Container maxWidth="xl" disableGutters>
-              <Box
-                sx={{ height: "100vh" }}
-                display="flex"
-                flexDirection="column"
-              >
-                <AppRoutes />
-              </Box>
-            </Container>
+            <TasksContextProvider>
+              <DndProvider backend={HTML5Backend}>
+                <CssBaseline />
+                <Container maxWidth="xl" disableGutters>
+                  <Box
+                    sx={{ height: "100vh" }}
+                    display="flex"
+                    flexDirection="column"
+                  >
+                    <AppRoutes />
+                  </Box>
+                </Container>
+              </DndProvider>
+            </TasksContextProvider>
           </NewspaperContextProvider>
         </UserContextProvider>
       </UsersContextProvider>
