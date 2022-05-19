@@ -1,17 +1,10 @@
 import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
-import update from "immutability-helper";
 import * as React from "react";
-import { useCallback } from "react";
 import TaskCard from "../components/TaskCard";
+import { TASK_STATUSES } from "../constants";
 import KanbanBoardColumn from "./KanbanBoardColumn";
 import KanbanBoardColumns from "./KanbanBoardColumns";
-
-const TASK_STATUSES = {
-  new: "Новая",
-  inProgress: "В работе",
-  done: "Готово",
-};
 
 export default function KanbanBoard({
   tasks,

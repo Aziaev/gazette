@@ -6,6 +6,7 @@ import shortid from "shortid";
 import KanbanBoard from "../components/KanbanBoard";
 import TaskEditDialog from "../components/TaskEditDialog";
 import { useTasksContext } from "../context/TasksContext";
+import { useUserContext } from "../context/UserContext";
 import { clone } from "../utils";
 
 const TASK_STATUSES = {
@@ -18,7 +19,8 @@ export default function Tasks() {
   const [error, setError] = useState(null);
   const { tasks, addTask, deleteTask, updateTask, findTaskById, setTasks } =
     useTasksContext();
-  const [task, setTask] = useState(false);
+  const [task, setTask] = useState(null);
+  const { user } = useUserContext();
 
   function saveTask() {
     let result = {};
@@ -30,6 +32,7 @@ export default function Tasks() {
       const createdTask = {
         ...task,
         id: shortid.generate(),
+        creator: user,
         status: TASK_STATUSES.new,
       };
 

@@ -21,7 +21,13 @@ export const TasksContextProvider = ({ children }) => {
   }
 
   function addTask(task) {
-    if (!task || !task.title || !task.description) {
+    if (
+      !task ||
+      !task.title ||
+      !task.description ||
+      !task.assignee ||
+      !task.creator
+    ) {
       return {
         error: "Все поля обязательны",
       };
@@ -44,14 +50,14 @@ export const TasksContextProvider = ({ children }) => {
   }
 
   function updateTask(task) {
-    const tempTasks = [...tasks];
+    setTasks((prevTasks) => {
+      const tempTasks = [...prevTasks];
 
-    const taskIndex = findTaskIndex(task.id);
-    tempTasks.splice(taskIndex, 1, task);
+      const taskIndex = findTaskIndex(task.id);
+      tempTasks.splice(taskIndex, 1, task);
 
-    console.log({ tasks, tempTasks });
-
-    setTasks(tempTasks);
+      return tempTasks;
+    });
 
     return {};
   }

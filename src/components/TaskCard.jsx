@@ -1,16 +1,25 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { CardHeader, Chip } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import * as React from "react";
 import { useRef } from "react";
-import { useDrag, useDrop } from "react-dnd";
+import { useDrag } from "react-dnd";
+import { TASK_STATUSES } from "../constants";
+
+const STATUS_COLOR_MAP = {
+  [TASK_STATUSES.new]: "primary",
+  [TASK_STATUSES.inProgress]: "warning",
+  [TASK_STATUSES.done]: "success",
+};
 
 export default function TaskCard(props) {
   const { task, index, handleDeleteTask, handleEditTask, moveCard } = props;
-  const { id, title, description, status } = task;
+  const { id, title, description, status, assignee, creator } = task;
 
   const ref = useRef(null);
 
@@ -73,14 +82,18 @@ export default function TaskCard(props) {
       // data-handler-id={handlerId}
     >
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {status}
-        </Typography>
+        <Chip size="small" color={STATUS_COLOR_MAP[status]} label={status} />
         <Typography variant="h5" component="div">
           {title}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 1.5 }}>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
           {description}
+        </Typography>
+        <Typography variant="body2" component="div">
+          Создатель: {creator.name}
+        </Typography>
+        <Typography variant="body2" component="div">
+          Ответственный: {assignee.name}
         </Typography>
       </CardContent>
       <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>

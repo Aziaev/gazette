@@ -14,10 +14,10 @@ const UserContext = createContext({
 
 export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useLocalstorage("user");
-  const { findUser } = useUsersContext();
+  const { findUserByEmail } = useUsersContext();
 
   function login(user) {
-    const existingUser = findUser(user) || {};
+    const existingUser = findUserByEmail(user) || {};
 
     if (existingUser.password !== user.password) {
       return { error: "Неправильный логин или пароль" };

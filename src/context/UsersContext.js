@@ -48,8 +48,12 @@ export const UsersContextProvider = ({ children }) => {
     setUsers(tempUsers);
   }
 
-  function findUser(user) {
+  function findUserByEmail(user) {
     return (users || []).find(({ email }) => email === user.email);
+  }
+
+  function findUserById(userId) {
+    return (users || []).find(({ id }) => userId === id);
   }
 
   return (
@@ -59,7 +63,8 @@ export const UsersContextProvider = ({ children }) => {
 
         addUser,
         deleteUser,
-        findUser,
+        findUserByEmail,
+        findUserById,
       }}
     >
       {children}

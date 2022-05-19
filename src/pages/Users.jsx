@@ -17,7 +17,7 @@ export default function Users() {
       }}
     >
       {(users || []).map((user) => (
-        <UserCard user={user} deleteUser={deleteUser} />
+        <UserCard key={user.id} user={user} deleteUser={deleteUser} />
       ))}
     </Box>
   );
