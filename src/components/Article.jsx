@@ -8,7 +8,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import draftToHtml from "draftjs-to-html";
 import { useState } from "react";
-import "../assets/css/articleCard.css";
 
 export default function Article(props) {
   const { article, editArticle, deleteArticle } = props;
@@ -61,7 +60,9 @@ export default function Article(props) {
             <MoreVertIcon fontSize="small" />
           </IconButton>
         ) : (
-          <Box sx={{ width: "36px", height: "36px", alignSelf: "baseline" }} />
+          <Box
+            sx={{ minWidth: "36px", height: "36px", alignSelf: "baseline" }}
+          />
         )}
         <Menu
           id="menu-appbar"

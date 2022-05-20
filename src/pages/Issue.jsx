@@ -108,10 +108,13 @@ export default function Issue() {
         text: convertToRaw(editorState.getCurrentContent()),
       };
     } else {
+      const nextIndex = clonedIssue.pages[activePage].articles.length;
+
       clonedIssue.pages[activePage].articles = [
         ...clonedIssue.pages[activePage].articles,
         {
           ...editedArticle,
+          index: nextIndex,
           id: shortId.generate(),
           text: convertToRaw(editorState.getCurrentContent()),
         },
