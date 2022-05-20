@@ -71,10 +71,13 @@ export default function Issue() {
       const reader = new FileReader();
 
       reader.onloadend = () => {
+        const index = clonedIssue.pages[activePage].articles.length;
+
         clonedIssue.pages[activePage].articles = [
           ...clonedIssue.pages[activePage].articles,
           {
             base64: reader.result,
+            index,
             id: shortId.generate(),
           },
         ];
@@ -109,6 +112,7 @@ export default function Issue() {
       };
     } else {
       const nextIndex = clonedIssue.pages[activePage].articles.length;
+      console.log(nextIndex);
 
       clonedIssue.pages[activePage].articles = [
         ...clonedIssue.pages[activePage].articles,
