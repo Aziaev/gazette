@@ -1,9 +1,10 @@
+import * as React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Menu } from "@mui/material";
+import { IconButton, ListItemIcon, Menu } from "@mui/material";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import draftToHtml from "draftjs-to-html";
 import { useState } from "react";
@@ -12,6 +13,7 @@ import "../assets/css/articleCard.css";
 export default function Article(props) {
   const { article, editArticle, deleteArticle } = props;
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showControl, setShowControl] = useState(false);
 
   function handleDeleteArticle() {
     deleteArticle(article);
@@ -32,12 +34,19 @@ export default function Article(props) {
   }
 
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box
+      onMouseEnter={() => {
+        setShowControl(true);
+      }}
+      onMouseLeave={() => {
+        setShowControl(false);
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "baseline",
+          alignItems: "flex-start",
         }}
       >
         <Typography
@@ -47,11 +56,13 @@ export default function Article(props) {
         >
           {article.headline || "Нет заголовка"}
         </Typography>
-        <Button
-          onClick={handleMenu}
-          variant="text"
-          startIcon={<MoreVertIcon />}
-        />
+        {showControl ? (
+          <IconButton onClick={handleMenu}>
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        ) : (
+          <Box sx={{ width: "36px", height: "36px", alignSelf: "baseline" }} />
+        )}
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
@@ -67,8 +78,18 @@ export default function Article(props) {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <Button onClick={handleDeleteArticle} startIcon={<DeleteIcon />} />
-          <Button onClick={handleEditArticle} startIcon={<EditIcon />} />
+          <MenuItem onClick={handleDeleteArticle}>
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            Удалить
+          </MenuItem>
+          <MenuItem onClick={handleEditArticle}>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            Изменить
+          </MenuItem>
         </Menu>
       </Box>
 
