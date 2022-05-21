@@ -7,7 +7,14 @@ import { PLACEHOLDER } from "./Articles";
 import ArticleText from "./ArticleText";
 
 export default function Article(props) {
-  const { article, editArticle, deleteArticle, index, moveArticle } = props;
+  const {
+    article,
+    editArticle,
+    deleteArticle,
+    index,
+    moveArticle,
+    saveArticleImage,
+  } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [showControl, setShowControl] = useState(false);
   const ref = useRef(null);
@@ -90,6 +97,7 @@ export default function Article(props) {
         breakInside: isImage ? "avoid-column" : undefined,
         display: "flex",
         flexDirection: "column",
+        columnSpan: isImage ? article.columnSpan : undefined,
       }}
     >
       {isPlaceholder ? (
@@ -106,6 +114,7 @@ export default function Article(props) {
               article={article}
               showControl={showControl}
               handleDeleteArticle={handleDeleteArticle}
+              saveArticleImage={saveArticleImage}
               anchorEl={anchorEl}
               openMenu={openMenu}
               closeMenu={closeMenu}

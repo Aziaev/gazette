@@ -45,7 +45,7 @@ export default function Issue() {
   const open = Boolean(anchorEl);
   const fileInput = useRef();
 
-  const handleClick = (event) => {
+  const openMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -53,7 +53,7 @@ export default function Issue() {
     setAnchorEl(null);
   };
 
-  function handleClose() {
+  function closeArticleEditor() {
     setEditedArticle(null);
   }
 
@@ -97,7 +97,7 @@ export default function Issue() {
     setEditedArticle({ ...editedArticle, [name]: value });
   }
 
-  function handleSave() {
+  function saveArticle() {
     const clonedIssue = clone(issue);
 
     if (editedArticle.id) {
@@ -111,14 +111,10 @@ export default function Issue() {
         text: convertToRaw(editorState.getCurrentContent()),
       };
     } else {
-      const nextIndex = clonedIssue.pages[activePage].articles.length;
-      console.log(nextIndex);
-
       clonedIssue.pages[activePage].articles = [
         ...clonedIssue.pages[activePage].articles,
         {
           ...editedArticle,
-          index: nextIndex,
           id: shortId.generate(),
           text: convertToRaw(editorState.getCurrentContent()),
         },
@@ -128,6 +124,18 @@ export default function Issue() {
     updateIssue(clonedIssue);
     setEditedArticle(null);
     setEditorState(() => EditorState.createEmpty());
+  }
+
+  function saveArticleImage(articleImage) {
+    const clonedIssue = clone(issue);
+
+    const articleIndex = findIndexInArray(
+      clonedIssue.pages[activePage].articles,
+      articleImage.id
+    );
+
+    clonedIssue.pages[activePage].articles[articleIndex] = articleImage;
+    updateIssue(clonedIssue);
   }
 
   if (!issue) {
@@ -166,7 +174,7 @@ export default function Issue() {
               aria-controls={open ? "issue-menu" : undefined}
               aria-haspopup="true"
               aria-expanded={open ? "true" : undefined}
-              onClick={handleClick}
+              onClick={openMenu}
             >
               <MoreVertIcon />
             </Button>
@@ -207,6 +215,7 @@ export default function Issue() {
           setEditedArticle={setEditedArticle}
           setEditorState={setEditorState}
           activePage={activePage}
+          saveArticleImage={saveArticleImage}
         />
         <PageSwitch activePage={activePage} setActivePage={setActivePage} />
       </Box>
@@ -214,9 +223,9 @@ export default function Issue() {
         editedArticle={editedArticle}
         editorState={editorState}
         setEditorState={setEditorState}
-        handleClose={handleClose}
+        handleClose={closeArticleEditor}
         handleChange={handleChange}
-        handleSave={handleSave}
+        handleSave={saveArticle}
       />
     </>
   );

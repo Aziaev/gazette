@@ -1,5 +1,7 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import {
   IconButton,
   ImageListItem,
@@ -14,10 +16,22 @@ export default function ArticleImage(props) {
     article,
     showControl,
     handleDeleteArticle,
+    saveArticleImage,
     anchorEl,
     openMenu,
     closeMenu,
   } = props;
+
+  function makeImageWide() {
+    saveArticleImage({ ...article, columnSpan: "all" });
+    closeMenu();
+  }
+
+  function makeImageNarrow() {
+    const { columnSpan, ...updatedArticle } = article;
+    saveArticleImage(updatedArticle);
+    closeMenu();
+  }
 
   return (
     <ImageListItem>
@@ -58,6 +72,21 @@ export default function ArticleImage(props) {
           </ListItemIcon>
           Удалить
         </MenuItem>
+        {article.columnSpan ? (
+          <MenuItem onClick={makeImageNarrow}>
+            <ListItemIcon>
+              <FullscreenExitIcon fontSize="small" />
+            </ListItemIcon>
+            По размеру колонки
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={makeImageWide}>
+            <ListItemIcon>
+              <FullscreenIcon fontSize="small" />
+            </ListItemIcon>
+            На всю ширину
+          </MenuItem>
+        )}
       </Menu>
     </ImageListItem>
   );

@@ -13,6 +13,7 @@ export default function Articles({
   activePage,
   setEditedArticle,
   setEditorState,
+  saveArticleImage,
 }) {
   const { newspaperId, issueId } = useParams();
   const { findIssueByIds, updateIssue } = useNewspaperContext();
@@ -88,10 +89,11 @@ export default function Articles({
         return (
           <Article
             key={index}
+            index={index}
             article={article}
             editArticle={editArticle}
             deleteArticle={deleteArticle}
-            index={index}
+            saveArticleImage={saveArticleImage}
             moveArticle={moveArticle}
           />
         );
