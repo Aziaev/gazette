@@ -7,85 +7,58 @@ import {
   ListItemIcon,
   Menu,
 } from "@mui/material";
-import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
-import * as React from "react";
-import { useState } from "react";
-import "../assets/css/articleCard.css";
 
 export default function ArticleImage(props) {
-  const { article, deleteArticle } = props;
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showControl, setShowControl] = useState(false);
-
-  function handleDeleteArticle() {
-    deleteArticle(article);
-    handleClose();
-  }
-
-  function handleMenu(event) {
-    setAnchorEl(event.currentTarget);
-  }
-
-  function handleClose() {
-    setAnchorEl(null);
-  }
+  const {
+    article,
+    showControl,
+    handleDeleteArticle,
+    anchorEl,
+    openMenu,
+    closeMenu,
+  } = props;
 
   return (
-    <Box
-      sx={{
-        breakInside: "avoid-column",
-        mb: 1,
-      }}
-    >
-      <ImageListItem
-        onMouseEnter={() => {
-          setShowControl(true);
+    <ImageListItem>
+      <img src={article.base64} alt="articleImage" />
+      {showControl && (
+        <ImageListItemBar
+          sx={{
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, " +
+              "rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%)",
+          }}
+          position="top"
+          actionIcon={
+            <IconButton onClick={openMenu} sx={{ color: "white" }}>
+              <MoreVertIcon fontSize="small" />
+            </IconButton>
+          }
+          actionPosition="right"
+        />
+      )}
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
         }}
-        onMouseLeave={() => {
-          setShowControl(false);
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
         }}
+        open={Boolean(anchorEl)}
+        onClose={closeMenu}
       >
-        <img src={article.base64} alt="articleImage" />
-        {showControl && (
-          <ImageListItemBar
-            sx={{
-              background:
-                "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, " +
-                "rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%)",
-            }}
-            position="top"
-            actionIcon={
-              <IconButton onClick={handleMenu} sx={{ color: "white" }}>
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-            }
-            actionPosition="right"
-          />
-        )}
-        <Menu
-          id="menu-appbar"
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={handleDeleteArticle}>
-            <ListItemIcon>
-              <DeleteIcon fontSize="small" />
-            </ListItemIcon>
-            Удалить
-          </MenuItem>
-        </Menu>
-      </ImageListItem>
-    </Box>
+        <MenuItem onClick={handleDeleteArticle}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" />
+          </ListItemIcon>
+          Удалить
+        </MenuItem>
+      </Menu>
+    </ImageListItem>
   );
 }

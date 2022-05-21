@@ -1,10 +1,9 @@
 import Box from "@mui/material/Box";
 import { convertFromRaw, EditorState } from "draft-js";
 import { useParams } from "react-router-dom";
-import Article from "../components/Article";
 import { useNewspaperContext } from "../context/NewspaperContext";
 import { clone, deleteArrayItemById } from "../utils";
-import ArticleImage from "./ArticleImage";
+import Article from "./Article";
 
 export default function Articles({
   activePage,
@@ -35,6 +34,8 @@ export default function Articles({
     setEditedArticle(clonedArticle);
   }
 
+  const articles = pages[activePage].articles;
+
   return (
     <Box
       sx={{
@@ -42,19 +43,15 @@ export default function Articles({
         flexGrow: 1,
         height: "100%",
         columnFill: "auto",
-        columnGap: 2,
       }}
     >
-      {pages[activePage].articles.map((article, index) => {
-        return article.base64 ? (
-          <ArticleImage
-            key={index}
-            article={article}
-            deleteArticle={deleteArticle}
-          />
-        ) : (
+      {articles.map((article, index) => {
+        return (
           <Article
             key={index}
+            index={index}
+            activePage={activePage}
+            issue={issue}
             article={article}
             deleteArticle={deleteArticle}
             editArticle={editArticle}

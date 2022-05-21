@@ -1,110 +1,134 @@
-import * as React from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { IconButton, ListItemIcon, Menu } from "@mui/material";
 import Box from "@mui/material/Box";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
-import draftToHtml from "draftjs-to-html";
-import { useState } from "react";
+import * as React from "react";
+import { useCallback, useRef, useState } from "react";
+import { useDrag, useDrop } from "react-dnd";
+import { useNewspaperContext } from "../context/NewspaperContext";
+import { clone } from "../utils";
+import ArticleImage from "./ArticleImage";
+import ArticleText from "./ArticleText";
 
 export default function Article(props) {
-  const { article, editArticle, deleteArticle } = props;
+  const {
+    article,
+    article: { base64 },
+    index,
+    editArticle,
+    deleteArticle,
+    issue,
+    activePage,
+  } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [showControl, setShowControl] = useState(false);
+  const ref = useRef(null);
+  const { updateIssue } = useNewspaperContext();
+
+  const moveArticle = useCallback(
+    (dragIndex, hoverIndex) => {
+      const clonedIssue = clone(issue);
+      const currentPageArticles = clonedIssue.pages[activePage].articles;
+      const draggedArtice = currentPageArticles[dragIndex];
+
+      currentPageArticles.splice(dragIndex, 1);
+      currentPageArticles.splice(hoverIndex, 0, draggedArtice);
+
+      updateIssue(clonedIssue);
+    },
+    [activePage, issue, updateIssue]
+  );
+
+  const [{ handlerId, canDrop }, drop] = useDrop({
+    accept: "article",
+    collect(monitor) {
+      const canDrop = monitor.isOver();
+
+      return {
+        handlerId: monitor.getHandlerId(),
+        canDrop,
+      };
+    },
+    drop(item, monitor) {
+      console.log("DROP", item);
+
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex !== hoverIndex) {
+        moveArticle(dragIndex, hoverIndex);
+      }
+
+      return undefined;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    type: "article",
+    item: () => {
+      return { ...article, index };
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  drag(drop(ref));
 
   function handleDeleteArticle() {
     deleteArticle(article);
-    handleClose();
+    closeMenu();
   }
 
   function handleEditArticle() {
     editArticle(article);
-    handleClose();
+    closeMenu();
   }
 
-  function handleMenu(event) {
+  function openMenu(event) {
     setAnchorEl(event.currentTarget);
   }
 
-  function handleClose() {
+  function closeMenu() {
     setAnchorEl(null);
   }
 
   return (
-    <Box
+    <div
       onMouseEnter={() => {
         setShowControl(true);
       }}
       onMouseLeave={() => {
         setShowControl(false);
       }}
+      ref={ref}
+      data-handler-id={handlerId}
+      style={{
+        breakInside: base64 ? "avoid-column" : undefined,
+      }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <Typography
-          variant="h5"
-          component="div"
-          sx={!article.headline ? { color: "lightgrey" } : {}}
-        >
-          {article.headline || "Нет заголовка"}
-        </Typography>
-        {showControl ? (
-          <IconButton onClick={handleMenu}>
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-        ) : (
-          <Box
-            sx={{ minWidth: "36px", height: "36px", alignSelf: "baseline" }}
-          />
-        )}
-        <Menu
-          id="menu-appbar"
+      {base64 ? (
+        <ArticleImage
+          article={article}
+          showControl={showControl}
+          handleDeleteArticle={handleDeleteArticle}
           anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={handleDeleteArticle}>
-            <ListItemIcon>
-              <DeleteIcon fontSize="small" />
-            </ListItemIcon>
-            Удалить
-          </MenuItem>
-          <MenuItem onClick={handleEditArticle}>
-            <ListItemIcon>
-              <EditIcon fontSize="small" />
-            </ListItemIcon>
-            Изменить
-          </MenuItem>
-        </Menu>
-      </Box>
-
-      <Box sx={article.text ? { mt: 1.5 } : { mt: 1.5, color: "lightgrey" }}>
-        {article.text ? (
-          <div
-            dangerouslySetInnerHTML={{
-              __html: draftToHtml(article.text),
-            }}
-          />
-        ) : (
-          "Нет текста"
+          openMenu={openMenu}
+          closeMenu={closeMenu}
+        />
+      ) : (
+        <ArticleText
+          article={article}
+          showControl={showControl}
+          handleDeleteArticle={handleDeleteArticle}
+          handleEditArticle={handleEditArticle}
+          anchorEl={anchorEl}
+          openMenu={openMenu}
+          closeMenu={closeMenu}
+        />
+      )}
+      <Box sx={{ height: "18px" }}>
+        {!isDragging && canDrop && (
+          <hr style={{ margin: 0, border: "2px orange dashed" }} />
         )}
       </Box>
-    </Box>
+    </div>
   );
 }
