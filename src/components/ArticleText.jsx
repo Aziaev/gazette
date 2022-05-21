@@ -14,6 +14,7 @@ export default function ArticleText(props) {
     showControl,
     handleDeleteArticle,
     handleEditArticle,
+    headerSize,
     anchorEl,
     openMenu,
     closeMenu,
@@ -29,9 +30,9 @@ export default function ArticleText(props) {
         }}
       >
         <Typography
-          variant="h5"
+          variant={headerSize || "h5"}
           component="div"
-          sx={!article.headline ? { color: "lightgrey" } : {}}
+          sx={!article.headline ? { color: "lightgrey", fontSize: "5px" } : {}}
         >
           {article.index} {article.headline || "Нет заголовка"}
         </Typography>

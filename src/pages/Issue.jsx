@@ -1,19 +1,28 @@
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { ListItemIcon, ListItemText } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  FormControl,
+  InputLabel,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { convertToRaw, EditorState } from "draft-js";
+import * as React from "react";
 import { useRef, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { useParams } from "react-router-dom";
@@ -37,6 +46,7 @@ export default function Issue() {
   const { findIssueByIds, updateIssue } = useNewspaperContext();
   const [editedArticle, setEditedArticle] = useState(null);
   const [activePage, setActivePage] = useState(0);
+  const [issueEditorOpen, setIssueEditorOpen] = useState(false);
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -51,6 +61,20 @@ export default function Issue() {
 
   const closeMenu = () => {
     setAnchorEl(null);
+  };
+
+  const openIssueEditor = () => {
+    setIssueEditorOpen(true);
+  };
+
+  const closeIssueEditor = () => {
+    setIssueEditorOpen(false);
+  };
+
+  const saveIssue = (issue) => {
+    updateIssue(issue);
+    closeIssueEditor();
+    closeMenu();
   };
 
   function closeArticleEditor() {
@@ -208,6 +232,12 @@ export default function Issue() {
                   <ListItemText>Добавить картинку</ListItemText>
                 </MenuItem>
               </label>
+              <MenuItem onClick={openIssueEditor}>
+                <ListItemIcon>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Настройки выпуска</ListItemText>
+              </MenuItem>
             </Menu>
           </Box>
         </Box>
@@ -219,7 +249,7 @@ export default function Issue() {
         />
         <PageSwitch activePage={activePage} setActivePage={setActivePage} />
       </Box>
-      <EditIssueDialog
+      <EditArticleDialog
         editedArticle={editedArticle}
         editorState={editorState}
         setEditorState={setEditorState}
@@ -227,13 +257,19 @@ export default function Issue() {
         handleChange={handleChange}
         handleSave={saveArticle}
       />
+      <EditIssueDialog
+        issue={issue}
+        saveIssue={saveIssue}
+        issueEditorOpen={issueEditorOpen}
+        closeIssueEditor={closeIssueEditor}
+      />
     </>
   );
 }
 
 Issue.route = "issue";
 
-function EditIssueDialog({
+function EditArticleDialog({
   editedArticle,
   editorState,
   setEditorState,
@@ -292,6 +328,133 @@ function EditIssueDialog({
       <DialogActions>
         <Button onClick={handleClose}>Отменить</Button>
         <Button onClick={handleSave}>Сохранить</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+const HEADER_TEXT_VARIANTS = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "subtitle1",
+  "subtitle2",
+  "body1",
+  "body2",
+  "caption",
+  "overline",
+];
+
+const TEXT_SIZES = [
+  "10px",
+  "12px",
+  "14px",
+  "16px",
+  "18px",
+  "20px",
+  "22px",
+  "24px",
+  "28px",
+  "32px",
+];
+
+function EditIssueDialog({
+  issue: defaultIssue,
+  closeIssueEditor,
+  issueEditorOpen,
+  saveIssue,
+}) {
+  const [issue, setIssue] = useState(defaultIssue);
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setIssue({ ...issue, [name]: value });
+  }
+
+  return (
+    <Dialog fullWidth onClose={closeIssueEditor} open={issueEditorOpen}>
+      <DialogTitle>Добавление номера</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Введите название, дату и количество колонок в номере
+        </DialogContentText>
+        <TextField
+          type="date"
+          margin="dense"
+          label="Дата номера"
+          fullWidth
+          variant="standard"
+          name="date"
+          value={(issue && issue.date) || ""}
+          onChange={handleChange}
+        />
+        <TextField
+          margin="dense"
+          label="Название номера"
+          fullWidth
+          variant="standard"
+          name="name"
+          value={(issue && issue.name) || ""}
+          inputProps={{
+            maxLength: 32,
+          }}
+          onChange={handleChange}
+        />
+        <FormControl variant="standard" sx={{ mt: 1, width: "100%" }}>
+          <InputLabel>Количество колонок</InputLabel>
+          <Select
+            fullWidth
+            variant="standard"
+            name="columns"
+            value={(issue && issue.columns) || ""}
+            onChange={handleChange}
+          >
+            <MenuItem value={1}>Одна колонка</MenuItem>
+            <MenuItem value={2}>Две колонки</MenuItem>
+            <MenuItem value={3}>Три колонки</MenuItem>
+            <MenuItem value={4}>Четыре колонки</MenuItem>
+            <MenuItem value={5}>Пять колонок</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl variant="standard" sx={{ mt: 1, width: "100%" }}>
+          <InputLabel>Шрифт заголовка</InputLabel>
+          <Select
+            fullWidth
+            variant="standard"
+            name="headerSize"
+            value={(issue && issue.headerSize) || ""}
+            onChange={handleChange}
+          >
+            {HEADER_TEXT_VARIANTS.map((tp) => (
+              <MenuItem key={tp} value={tp}>
+                {tp}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl variant="standard" sx={{ mt: 1, width: "100%" }}>
+          <InputLabel>Шрифт текста</InputLabel>
+          <Select
+            fullWidth
+            variant="standard"
+            name="textSize"
+            value={(issue && issue.textSize) || ""}
+            onChange={handleChange}
+          >
+            {TEXT_SIZES.map((ts) => (
+              <MenuItem key={ts} value={ts}>
+                {ts}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeIssueEditor}>Отменить</Button>
+        <Button onClick={() => saveIssue(issue)}>Сохранить</Button>
       </DialogActions>
     </Dialog>
   );

@@ -3,6 +3,7 @@ import { convertFromRaw, EditorState } from "draft-js";
 import { useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useNewspaperContext } from "../context/NewspaperContext";
+import { styled } from "@mui/material/styles";
 import { clone, deleteArrayItemById } from "../utils";
 import Article from "./Article";
 
@@ -18,7 +19,7 @@ export default function Articles({
   const { newspaperId, issueId } = useParams();
   const { findIssueByIds, updateIssue } = useNewspaperContext();
   const issue = findIssueByIds(newspaperId, issueId);
-  const { pages, columns } = issue;
+  const { pages, columns, headerSize, textSize } = issue;
 
   function deleteArticle(article) {
     const clonedIssue = clone(issue);
@@ -76,21 +77,17 @@ export default function Articles({
     [activePage, articlesWithPlacers, issue, updateIssue]
   );
 
+  console.log({ textSize, headerSize });
+
   return (
-    <Box
-      sx={{
-        columnCount: columns,
-        flexGrow: 1,
-        height: "100%",
-        columnFill: "auto",
-      }}
-    >
+    <ArticlesContainer columns={columns} textSize={textSize}>
       {articlesWithPlacers.map((article, index) => {
         return (
           <Article
             key={index}
             index={index}
             article={article}
+            headerSize={headerSize}
             editArticle={editArticle}
             deleteArticle={deleteArticle}
             saveArticleImage={saveArticleImage}
@@ -98,6 +95,17 @@ export default function Articles({
           />
         );
       })}
-    </Box>
+    </ArticlesContainer>
   );
 }
+
+const ArticlesContainer = styled(Box)`
+  height: 100%;
+  column-fill: auto;
+  column-count: ${({ columns }) => columns};
+  flex-grow: 1;
+
+  p {
+    font-size: ${({ textSize }) => textSize};
+  }
+`;

@@ -11,6 +11,7 @@ export default function Article(props) {
     article,
     editArticle,
     deleteArticle,
+    headerSize,
     index,
     moveArticle,
     saveArticleImage,
@@ -122,6 +123,7 @@ export default function Article(props) {
           ) : (
             <ArticleText
               article={article}
+              headerSize={headerSize}
               showControl={showControl}
               handleDeleteArticle={handleDeleteArticle}
               handleEditArticle={handleEditArticle}
