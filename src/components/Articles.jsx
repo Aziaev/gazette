@@ -77,8 +77,6 @@ export default function Articles({
     [activePage, articlesWithPlacers, issue, updateIssue]
   );
 
-  console.log({ textSize, headerSize });
-
   return (
     <ArticlesContainer columns={columns} textSize={textSize}>
       {articlesWithPlacers.map((article, index) => {
