@@ -1,58 +1,44 @@
 import Box from "@mui/material/Box";
 import * as React from "react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { useNewspaperContext } from "../context/NewspaperContext";
-import { clone } from "../utils";
 import ArticleImage from "./ArticleImage";
+import { PLACEHOLDER } from "./Articles";
 import ArticleText from "./ArticleText";
 
 export default function Article(props) {
-  const {
-    article,
-    article: { base64 },
-    index,
-    editArticle,
-    deleteArticle,
-    issue,
-    activePage,
-  } = props;
+  const { article, editArticle, deleteArticle, index, moveArticle } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [showControl, setShowControl] = useState(false);
   const ref = useRef(null);
-  const { updateIssue } = useNewspaperContext();
+  const isImage = article.base64;
+  const isPlaceholder = article === PLACEHOLDER;
 
-  const moveArticle = useCallback(
-    (dragIndex, hoverIndex) => {
-      const clonedIssue = clone(issue);
-      const currentPageArticles = clonedIssue.pages[activePage].articles;
-      const draggedArtice = currentPageArticles[dragIndex];
-
-      currentPageArticles.splice(dragIndex, 1);
-      currentPageArticles.splice(hoverIndex, 0, draggedArtice);
-
-      updateIssue(clonedIssue);
-    },
-    [activePage, issue, updateIssue]
-  );
-
-  const [{ handlerId, canDrop }, drop] = useDrop({
+  const [{ handlerId, isDragging2 }, drop] = useDrop({
     accept: "article",
     collect(monitor) {
+      const item = monitor.getItem();
+      const dragIndex = item && item.index;
+
+      const hoverIndex = index;
+
       const canDrop = monitor.isOver();
+      const dropForward = dragIndex ? hoverIndex > dragIndex : null;
+      const dropBackward = dragIndex ? hoverIndex < dragIndex : null;
 
       return {
         handlerId: monitor.getHandlerId(),
+        isDragging2: monitor.getItemType() === "article",
         canDrop,
+        dropForward,
+        dropBackward,
       };
     },
-    drop(item, monitor) {
-      console.log("DROP", item);
-
+    drop(item) {
       const dragIndex = item.index;
       const hoverIndex = index;
 
-      if (dragIndex !== hoverIndex) {
+      if (isPlaceholder && dragIndex !== hoverIndex) {
         moveArticle(dragIndex, hoverIndex);
       }
 
@@ -60,8 +46,8 @@ export default function Article(props) {
     },
   });
 
-  const [{ isDragging }, drag] = useDrag({
-    type: "article",
+  const [_, drag] = useDrag({
+    type: isPlaceholder ? PLACEHOLDER : "article",
     item: () => {
       return { ...article, index };
     },
@@ -101,34 +87,42 @@ export default function Article(props) {
       ref={ref}
       data-handler-id={handlerId}
       style={{
-        breakInside: base64 ? "avoid-column" : undefined,
+        breakInside: isImage ? "avoid-column" : undefined,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      {base64 ? (
-        <ArticleImage
-          article={article}
-          showControl={showControl}
-          handleDeleteArticle={handleDeleteArticle}
-          anchorEl={anchorEl}
-          openMenu={openMenu}
-          closeMenu={closeMenu}
+      {isPlaceholder ? (
+        <Box
+          sx={{
+            height: "18px",
+            backgroundColor: isDragging2 ? "orange" : "",
+          }}
         />
       ) : (
-        <ArticleText
-          article={article}
-          showControl={showControl}
-          handleDeleteArticle={handleDeleteArticle}
-          handleEditArticle={handleEditArticle}
-          anchorEl={anchorEl}
-          openMenu={openMenu}
-          closeMenu={closeMenu}
-        />
+        <>
+          {isImage ? (
+            <ArticleImage
+              article={article}
+              showControl={showControl}
+              handleDeleteArticle={handleDeleteArticle}
+              anchorEl={anchorEl}
+              openMenu={openMenu}
+              closeMenu={closeMenu}
+            />
+          ) : (
+            <ArticleText
+              article={article}
+              showControl={showControl}
+              handleDeleteArticle={handleDeleteArticle}
+              handleEditArticle={handleEditArticle}
+              anchorEl={anchorEl}
+              openMenu={openMenu}
+              closeMenu={closeMenu}
+            />
+          )}
+        </>
       )}
-      <Box sx={{ height: "18px" }}>
-        {!isDragging && canDrop && (
-          <hr style={{ margin: 0, border: "2px orange dashed" }} />
-        )}
-      </Box>
     </div>
   );
 }
