@@ -99,6 +99,7 @@ export default function Article(props) {
         display: "flex",
         flexDirection: "column",
         columnSpan: isImage ? article.columnSpan : undefined,
+        marginBottom: isImage && article.columnSpan ? "16px" : undefined,
       }}
     >
       {isPlaceholder ? (

@@ -125,7 +125,7 @@ export default function NewspaperIndex() {
           ))}
           <Grid item xs={12} sx={{ textAlign: "center", cursor: "pointer" }}>
             <Button onClick={handleOpen} startIcon={<AddIcon />}>
-              Добавить номер
+              Добавить выпуск
             </Button>
           </Grid>
         </Grid>

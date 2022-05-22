@@ -35,7 +35,11 @@ export default function ArticleImage(props) {
 
   return (
     <ImageListItem>
-      <img src={article.base64} alt="articleImage" />
+      <img
+        src={article.base64}
+        alt="articleImage"
+        style={{ maxWidth: "100%", maxHeight: "100%" }}
+      />
       {showControl && (
         <ImageListItemBar
           sx={{

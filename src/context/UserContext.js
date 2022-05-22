@@ -13,7 +13,7 @@ const UserContext = createContext({
 });
 
 export const UserContextProvider = ({ children }) => {
-  const [user, setUser] = useLocalstorage("user");
+  const [user, setUser] = useLocalstorage("user", null);
   const { findUserByEmail } = useUsersContext();
 
   function login(user) {

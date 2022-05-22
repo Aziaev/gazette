@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useLocalstorage } from "../utils";
+import { clone, useLocalstorage } from "../utils";
 
 /**
  * Контекст для работы со списком газет.
@@ -37,7 +37,7 @@ export const NewspaperContextProvider = ({ children }) => {
   }
 
   function updateNewspaper(newspaper) {
-    const tempNewspapers = [...newspapers];
+    const tempNewspapers = clone(newspapers);
 
     const newspaperIndex = findNewspaperIndex(newspaper.id);
     tempNewspapers.splice(newspaperIndex, 1, newspaper);
@@ -46,7 +46,7 @@ export const NewspaperContextProvider = ({ children }) => {
   }
 
   function deleteNewspaper(newspaperId) {
-    const tempNewspapers = [...newspapers];
+    const tempNewspapers = clone(newspapers);
 
     const newspaperIndex = findNewspaperIndex(newspaperId);
     tempNewspapers.splice(newspaperIndex, 1);
@@ -56,7 +56,7 @@ export const NewspaperContextProvider = ({ children }) => {
 
   // CRUD номеров
   function addIssue(issue) {
-    const tempNewspapers = [...newspapers];
+    const tempNewspapers = clone(newspapers);
 
     const { newspaperId } = issue;
 
@@ -69,7 +69,7 @@ export const NewspaperContextProvider = ({ children }) => {
   }
 
   function updateIssue(issue) {
-    const tempNewspapers = [...newspapers];
+    const tempNewspapers = clone(newspapers);
 
     const { newspaperId } = issue;
 
@@ -84,7 +84,7 @@ export const NewspaperContextProvider = ({ children }) => {
   }
 
   function deleteIssue(issue) {
-    const tempNewspapers = [...newspapers];
+    const tempNewspapers = clone(newspapers);
     const { newspaperId } = issue;
     const newspaperIndex = findNewspaperIndex(newspaperId);
     const issueIndex = newspapers[newspaperIndex].issues.findIndex(

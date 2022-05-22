@@ -42,14 +42,14 @@ const setLocalstorageData = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
-export const useLocalstorage = (key) => {
+export const useLocalstorage = (key, defaultValue = []) => {
   const [value, setValue] = useState(getParsedLocalstorageData(key));
 
   useEffect(() => {
     setLocalstorageData(key, value);
   }, [key, value]);
 
-  return [value, setValue];
+  return [value || defaultValue, setValue];
 };
 
 export function stringToColor(string) {
@@ -82,79 +82,5 @@ export function stringAvatar(name) {
       bgcolor: stringToColor(name),
     },
     children: `${firstLetter}${secondLetter}`,
-  };
-}
-
-export function useArticleDrop({ article: { id, index }, issue, activePage }) {
-  const ref = useRef(null);
-  const { findIssueByIds, updateIssue } = useNewspaperContext();
-
-  const moveArticle = useCallback(
-    (dragIndex, hoverIndex) => {
-      const clonedIssue = clone(issue);
-      const currentPageArticles = clonedIssue.pages[activePage].articles;
-      const draggedArtice = currentPageArticles[dragIndex];
-      currentPageArticles.splice(dragIndex, 1);
-      currentPageArticles.splice(hoverIndex, 0, draggedArtice);
-      updateIssue(clonedIssue);
-    },
-    [activePage, issue, updateIssue]
-  );
-
-  const [{ handlerId, isOver }, drop] = useDrop({
-    accept: "article",
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-        isOver: monitor.isOver(),
-      };
-    },
-    hover(item, monitor) {
-      console.log("hover");
-
-      //
-      // if (!ref.current) {
-      //   return;
-      // }
-      // const dragIndex = item.index;
-      // const hoverIndex = index;
-      // if (dragIndex === hoverIndex) {
-      //   return;
-      // }
-      // const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      // const hoverMiddleY =
-      //   (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // const clientOffset = monitor.getClientOffset();
-      // const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      //   return;
-      // }
-      //
-      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      //   return;
-      // }
-      // moveArticle(dragIndex, hoverIndex);
-      // item.index = hoverIndex;
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    type: "article",
-    item: () => {
-      return { id, index };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  const opacity = isDragging ? 0 : 1;
-
-  drag(drop(ref));
-
-  return {
-    opacity,
-    handlerId,
-    isOver,
   };
 }

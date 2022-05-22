@@ -72,6 +72,7 @@ export default function Issue() {
   };
 
   const saveIssue = (issue) => {
+    console.log({ issue });
     updateIssue(issue);
     closeIssueEditor();
     closeMenu();
@@ -257,12 +258,14 @@ export default function Issue() {
         handleChange={handleChange}
         handleSave={saveArticle}
       />
-      <EditIssueDialog
-        issue={issue}
-        saveIssue={saveIssue}
-        issueEditorOpen={issueEditorOpen}
-        closeIssueEditor={closeIssueEditor}
-      />
+      {issueEditorOpen && (
+        <EditIssueDialog
+          issue={issue}
+          saveIssue={saveIssue}
+          issueEditorOpen={issueEditorOpen}
+          closeIssueEditor={closeIssueEditor}
+        />
+      )}
     </>
   );
 }
@@ -368,6 +371,7 @@ function EditIssueDialog({
   saveIssue,
 }) {
   const [issue, setIssue] = useState(defaultIssue);
+  console.log({ defaultIssue, issue });
 
   function handleChange(e) {
     const { name, value } = e.target;

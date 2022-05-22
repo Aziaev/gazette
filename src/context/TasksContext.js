@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import shortid from "shortid";
-import { useLocalstorage } from "../utils";
+import { clone, useLocalstorage } from "../utils";
 
 /**
  * Контекст для работы с задачами.
@@ -51,7 +51,7 @@ export const TasksContextProvider = ({ children }) => {
 
   function updateTask(task) {
     setTasks((prevTasks) => {
-      const tempTasks = [...prevTasks];
+      const tempTasks = clone(prevTasks);
 
       const taskIndex = findTaskIndex(task.id);
       tempTasks.splice(taskIndex, 1, task);

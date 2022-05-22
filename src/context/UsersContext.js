@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import shortid from "shortid";
-import { useLocalstorage } from "../utils";
+import { clone, useLocalstorage } from "../utils";
 
 /**
  * Контекст для работы со списком пользователей.
@@ -13,7 +13,7 @@ const UsersContext = createContext({
 });
 
 export const UsersContextProvider = ({ children }) => {
-  const [users, setUsers] = useLocalstorage("users");
+  const [users, setUsers] = useLocalstorage("users", []);
 
   function findUserIndex(userId) {
     return users.findIndex(({ id }) => userId === id);
@@ -40,7 +40,7 @@ export const UsersContextProvider = ({ children }) => {
   }
 
   function deleteUser(userId) {
-    const tempUsers = [...users];
+    const tempUsers = clone(users);
 
     const userIndex = findUserIndex(userId);
     tempUsers.splice(userIndex, 1);
