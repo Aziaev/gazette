@@ -1,7 +1,5 @@
 import { format, isValid } from "date-fns";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
-import { useNewspaperContext } from "../context/NewspaperContext";
+import { useEffect, useState } from "react";
 
 export function formatDate(date) {
   if (!isValid) {
@@ -43,13 +41,15 @@ const setLocalstorageData = (key, data) => {
 };
 
 export const useLocalstorage = (key, defaultValue = []) => {
-  const [value, setValue] = useState(getParsedLocalstorageData(key));
+  const [value, setValue] = useState(
+    getParsedLocalstorageData(key) || defaultValue
+  );
 
   useEffect(() => {
     setLocalstorageData(key, value);
   }, [key, value]);
 
-  return [value || defaultValue, setValue];
+  return [value, setValue];
 };
 
 export function stringToColor(string) {

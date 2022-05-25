@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useContext } from "react";
 import shortid from "shortid";
 import { clone, useLocalstorage } from "../utils";
 
@@ -16,55 +16,78 @@ const TasksContext = createContext({
 export const TasksContextProvider = ({ children }) => {
   const [tasks, setTasks] = useLocalstorage("tasks");
 
-  function findTaskIndex(taskId) {
+  const findTaskIndex = useCallback((tasks, taskId) => {
     return tasks.findIndex(({ id }) => taskId === id);
-  }
+  }, []);
 
-  function addTask(task) {
-    if (
-      !task ||
-      !task.title ||
-      !task.description ||
-      !task.assignee ||
-      !task.creator
-    ) {
-      return {
-        error: "Все поля обязательны",
-      };
-    }
+  const addTask = useCallback(
+    (task) => {
+      if (
+        !task ||
+        !task.title ||
+        !task.description ||
+        !task.assignee ||
+        !task.creator
+      ) {
+        return {
+          error: "Все поля обязательны",
+        };
+      }
 
-    const newTask = { ...task, id: shortid.generate() };
+      const newTask = { ...task, id: shortid.generate() };
 
-    setTasks([...(tasks || []), newTask]);
+      setTasks([...(tasks || []), newTask]);
 
-    return {};
-  }
+      return {};
+    },
+    [tasks, setTasks]
+  );
 
   function deleteTask(taskId) {
-    const tempTasks = [...tasks];
+    setTasks((prev) => {
+      const tempTasks = clone(prev);
 
-    const taskIndex = findTaskIndex(taskId);
-    tempTasks.splice(taskIndex, 1);
-
-    setTasks(tempTasks);
-  }
-
-  function updateTask(task) {
-    setTasks((prevTasks) => {
-      const tempTasks = clone(prevTasks);
-
-      const taskIndex = findTaskIndex(task.id);
-      tempTasks.splice(taskIndex, 1, task);
+      const taskIndex = findTaskIndex(tempTasks, taskId);
+      tempTasks.splice(taskIndex, 1);
 
       return tempTasks;
     });
-
-    return {};
   }
 
-  function findTaskById(taskId) {
-    return (tasks || []).find(({ id }) => taskId === id);
-  }
+  const updateTask = useCallback(
+    (task) => {
+      setTasks((prevTasks) => {
+        console.log("updateTask", tasks);
+
+        const clonedTasks = clone(prevTasks);
+
+        const taskIndex = findTaskIndex(clonedTasks, task.id);
+        clonedTasks.splice(taskIndex, 1, task);
+
+        console.log("updateTask", {
+          task,
+          tasks,
+          taskIndex,
+          prevTasks,
+          clonedTasks,
+        });
+
+        // return prevTasks;
+
+        return clonedTasks;
+      });
+
+      return {};
+    },
+    [findTaskIndex, setTasks, tasks]
+  );
+
+  const findTaskById = useCallback(
+    (taskId) => {
+      return (tasks || []).find(({ id }) => taskId === id);
+    },
+    [tasks]
+  );
 
   return (
     <TasksContext.Provider
