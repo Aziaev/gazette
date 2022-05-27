@@ -63,15 +63,13 @@ export default function App() {
             <TasksContextProvider>
               <DndProvider backend={HTML5Backend}>
                 <CssBaseline />
-                <Container maxWidth="xl" disableGutters>
-                  <Box
-                    sx={{ height: "100vh" }}
-                    display="flex"
-                    flexDirection="column"
-                  >
-                    <AppRoutes />
-                  </Box>
-                </Container>
+                <Box
+                  sx={{ height: "100vh" }}
+                  display="flex"
+                  flexDirection="column"
+                >
+                  <AppRoutes />
+                </Box>
               </DndProvider>
             </TasksContextProvider>
           </NewspaperContextProvider>

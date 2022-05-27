@@ -24,10 +24,10 @@ import Typography from "@mui/material/Typography";
 import { convertToRaw, EditorState } from "draft-js";
 import * as React from "react";
 import { useRef, useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
 import { useParams } from "react-router-dom";
 import shortId from "shortid";
 import Articles from "../components/Articles";
+import { EditArticleDialog } from "../components/EditArticleDialog";
 import PageSwitch from "../components/PageSwitch";
 import { useNewspaperContext } from "../context/NewspaperContext";
 import { clone, findIndexInArray, formatDate } from "../utils";
@@ -271,70 +271,6 @@ export default function Issue() {
 }
 
 Issue.route = "issue";
-
-function EditArticleDialog({
-  editedArticle,
-  editorState,
-  setEditorState,
-  handleClose,
-  handleChange,
-  handleSave,
-}) {
-  return (
-    <Dialog
-      maxWidth="lg"
-      fullWidth
-      onClose={handleClose}
-      open={!!editedArticle}
-    >
-      <DialogTitle>Редактирование статьи</DialogTitle>
-      <DialogContent>
-        <TextField
-          margin="dense"
-          label="Заголовок статьи"
-          fullWidth
-          variant="standard"
-          name="headline"
-          inputProps={{
-            maxLength: 32,
-          }}
-          value={(editedArticle && editedArticle.headline) || ""}
-          onChange={handleChange}
-        />
-        <Box
-          sx={{
-            mt: "2rem",
-            border: "1px lightgrey dashed",
-          }}
-        >
-          <Editor
-            wrapperClassName="wrapper-class"
-            editorClassName="editor-class"
-            toolbarClassName="toolbar-class"
-            editorState={editorState}
-            onEditorStateChange={setEditorState}
-            toolbar={{
-              options: [
-                "inline",
-                "blockType",
-                "list",
-                "textAlign",
-                "colorPicker",
-                "link",
-                "remove",
-                "history",
-              ],
-            }}
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Отменить</Button>
-        <Button onClick={handleSave}>Сохранить</Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
 
 const HEADER_TEXT_VARIANTS = [
   "h1",

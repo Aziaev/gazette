@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function NavItem(props) {
   const navigate = useNavigate();
-  const { isRouteActive, path, text, variant = "h5" } = props;
+  const { isRouteActive, path, text, variant = "h6" } = props;
 
   return (
     <Link
