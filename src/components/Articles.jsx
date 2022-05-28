@@ -77,6 +77,28 @@ export default function Articles({
     [activePage, articlesWithPlacers, issue, updateIssue]
   );
 
+  const moveDraft = useCallback(
+    (draft, putIndex) => {
+      const clonedIssue = clone(issue);
+
+      articlesWithPlacers.splice(putIndex, 1, draft);
+
+      clonedIssue.pages[activePage].articles = articlesWithPlacers.reduce(
+        (result, article) => {
+          if (article === PLACEHOLDER) {
+            return result;
+          }
+
+          return [...result, article];
+        },
+        []
+      );
+
+      updateIssue(clonedIssue);
+    },
+    [activePage, articlesWithPlacers, issue, updateIssue]
+  );
+
   return (
     <ArticlesContainer columns={columns} textSize={textSize}>
       {articlesWithPlacers.map((article, index) => {
@@ -90,6 +112,7 @@ export default function Articles({
             deleteArticle={deleteArticle}
             saveArticleImage={saveArticleImage}
             moveArticle={moveArticle}
+            moveDraft={moveDraft}
           />
         );
       })}

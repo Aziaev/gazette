@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import * as React from "react";
 import { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { useDraftContext } from "../context/DraftContext";
 import ArticleImage from "./ArticleImage";
 import { PLACEHOLDER } from "./Articles";
 import ArticleText from "./ArticleText";
@@ -14,6 +15,7 @@ export default function Article(props) {
     headerSize,
     index,
     moveArticle,
+    moveDraft,
     saveArticleImage,
   } = props;
   const [anchorEl, setAnchorEl] = useState(null);
@@ -21,33 +23,33 @@ export default function Article(props) {
   const ref = useRef(null);
   const isImage = article.base64;
   const isPlaceholder = article === PLACEHOLDER;
+  const { deleteDraft } = useDraftContext();
 
-  const [{ handlerId, isDragging2 }, drop] = useDrop({
-    accept: "article",
+  const [{ handlerId, isDragging }, drop] = useDrop({
+    accept: ["article", "draft"],
     collect(monitor) {
-      const item = monitor.getItem();
-      const dragIndex = item && item.index;
-
-      const hoverIndex = index;
-
-      const canDrop = monitor.isOver();
-      const dropForward = dragIndex ? hoverIndex > dragIndex : null;
-      const dropBackward = dragIndex ? hoverIndex < dragIndex : null;
-
       return {
         handlerId: monitor.getHandlerId(),
-        isDragging2: monitor.getItemType() === "article",
-        canDrop,
-        dropForward,
-        dropBackward,
+        isDragging:
+          monitor.getItemType() === "article" ||
+          monitor.getItemType() === "draft",
       };
     },
     drop(item) {
       const dragIndex = item.index;
       const hoverIndex = index;
 
-      if (isPlaceholder && dragIndex !== hoverIndex) {
+      if (!isPlaceholder) {
+        return undefined;
+      }
+
+      if (dragIndex && dragIndex !== hoverIndex) {
         moveArticle(dragIndex, hoverIndex);
+      }
+
+      if (!dragIndex) {
+        moveDraft(item, hoverIndex);
+        deleteDraft(item);
       }
 
       return undefined;
@@ -106,7 +108,7 @@ export default function Article(props) {
         <Box
           sx={{
             height: "18px",
-            backgroundColor: isDragging2 ? "orange" : "",
+            backgroundColor: isDragging ? "orange" : "",
           }}
         />
       ) : (

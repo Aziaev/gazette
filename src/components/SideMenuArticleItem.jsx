@@ -6,34 +6,36 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
+import { useRef } from "react";
+import { useDrag } from "react-dnd";
 
-export default function SideMenuArticleItem({ item }) {
-  if (!item.base64) {
-    return (
-      <ListItem disablePadding>
-        <ListItemButton>
-          <ListItemIcon>
-            <ImageIcon />
-          </ListItemIcon>
-          <ImageListItem>
-            <img
-              src="https://wallbox.ru/resize/640x960/wallpapers/main/201401/28acddf2a708c6b.jpg"
-              alt={item.id}
-              loading="lazy"
-            />
-          </ImageListItem>
-        </ListItemButton>
-      </ListItem>
-    );
-  }
+export default function SideMenuArticleItem({ draft }) {
+  const ref = useRef(null);
+
+  const [_, drag] = useDrag({
+    type: "draft",
+    item: () => {
+      return draft;
+    },
+  });
+
+  drag(ref);
+
+  const Content = draft.base64 ? (
+    <ImageListItem>
+      <img src={draft.base64} alt={draft.id} loading="lazy" />
+    </ImageListItem>
+  ) : (
+    <ListItemText primary={draft.headline} />
+  );
+
+  const Icon = draft.base64 ? <ImageIcon /> : <ArticleOutlinedIcon />;
 
   return (
-    <ListItem disablePadding>
+    <ListItem ref={ref} disablePadding>
       <ListItemButton>
-        <ListItemIcon>
-          <ArticleOutlinedIcon />
-        </ListItemIcon>
-        <ListItemText primary={item.headline} />
+        <ListItemIcon>{Icon}</ListItemIcon>
+        {Content}
       </ListItemButton>
     </ListItem>
   );

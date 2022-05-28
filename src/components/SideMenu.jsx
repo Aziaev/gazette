@@ -1,18 +1,19 @@
-import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
-import { Divider, Drawer } from "@mui/material";
+import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useState } from "react";
+import { useDraftContext } from "../context/DraftContext";
 import ArticleEditor from "./ArticleEditor";
+import FileUploader from "./FileUploader";
 import SideMenuArticleItem from "./SideMenuArticleItem";
 import SideMenuItem from "./SideMenuItem";
 
-export default function SideMenu({ open, closeDrawer }) {
+export default function SideMenu({ open }) {
+  const { drafts, addDraft, setDrafts } = useDraftContext();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [articles, setArticles] = useState([]);
 
   function openEditor() {
     setIsEditorOpen(true);
@@ -22,12 +23,17 @@ export default function SideMenu({ open, closeDrawer }) {
     setIsEditorOpen(false);
   }
 
+  function saveImage(item) {
+    addDraft(item);
+  }
+
   return (
     <Box
       sx={{
+        minWidth: open ? "1px" : "250px",
         width: open ? "1px" : "250px",
         borderRight: "1px lightgrey solid",
-        transition: "width 0.5s",
+        transition: "min-width 0.2s, width 0.2s",
         overflowX: "hidden",
       }}
     >
@@ -46,11 +52,7 @@ export default function SideMenu({ open, closeDrawer }) {
             icon={ArticleOutlinedIcon}
             openEditor={openEditor}
           />
-          <SideMenuItem
-            title="Добавить картинку"
-            icon={AddPhotoAlternateOutlinedIcon}
-            openEditor={openEditor}
-          />
+          <FileUploader saveImage={saveImage} />
         </List>
         <Divider />
         <Typography
@@ -62,14 +64,14 @@ export default function SideMenu({ open, closeDrawer }) {
           Материалы
         </Typography>
         <List>
-          {articles.map((item) => (
-            <SideMenuArticleItem id={item.id} item={item} />
+          {drafts.map((draft) => (
+            <SideMenuArticleItem key={draft.id} draft={draft} />
           ))}
         </List>
       </Box>
       <ArticleEditor
         isEditorOpen={isEditorOpen}
-        setArticles={setArticles}
+        setArticles={setDrafts}
         closeEditor={closeEditor}
       />
     </Box>
