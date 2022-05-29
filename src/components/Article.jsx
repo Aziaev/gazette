@@ -40,7 +40,6 @@ export default function Article(props) {
     },
     drop(item) {
       const { index: dragIndex, task } = item;
-      console.log(item);
       const hoverIndex = index;
 
       if (!isPlaceholder) {
