@@ -27,6 +27,7 @@ export const TasksContextProvider = ({ children }) => {
         !task.title ||
         !task.description ||
         !task.assignee ||
+        !task.type ||
         !task.creator
       ) {
         return {
@@ -57,29 +58,17 @@ export const TasksContextProvider = ({ children }) => {
   const updateTask = useCallback(
     (task) => {
       setTasks((prevTasks) => {
-        console.log("updateTask", tasks);
-
         const clonedTasks = clone(prevTasks);
 
         const taskIndex = findTaskIndex(clonedTasks, task.id);
         clonedTasks.splice(taskIndex, 1, task);
-
-        console.log("updateTask", {
-          task,
-          tasks,
-          taskIndex,
-          prevTasks,
-          clonedTasks,
-        });
-
-        // return prevTasks;
 
         return clonedTasks;
       });
 
       return {};
     },
-    [findTaskIndex, setTasks, tasks]
+    [findTaskIndex, setTasks]
   );
 
   const findTaskById = useCallback(

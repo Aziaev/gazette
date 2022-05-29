@@ -10,6 +10,11 @@ import * as React from "react";
 import { useUserContext } from "../context/UserContext";
 import { useUsersContext } from "../context/UsersContext";
 
+const TASK_TYPE = [
+  { value: "addImage", title: "Добавить картинку" },
+  { value: "addText", title: "Добавить статью" },
+];
+
 export default function TaskEditDialog({ task, setTask, saveTask }) {
   const { user } = useUserContext();
   const { users, findUserById } = useUsersContext();
@@ -24,7 +29,13 @@ export default function TaskEditDialog({ task, setTask, saveTask }) {
     setTask({ ...task, [name]: value });
   }
 
-  function selectHandler(e) {
+  function handleTaskTypeChange(e) {
+    const { name, value } = e.target;
+
+    setTask({ ...task, [name]: value });
+  }
+
+  function selectUserHandler(e) {
     const { name, value } = e.target;
     const user = findUserById(value);
 
@@ -45,7 +56,7 @@ export default function TaskEditDialog({ task, setTask, saveTask }) {
             id="creator"
             value={task && task.creator ? task.creator.id : user.id}
             label="Создатель задачи"
-            onChange={selectHandler}
+            onChange={selectUserHandler}
             disabled
           >
             {users.map((user) => (
@@ -63,11 +74,28 @@ export default function TaskEditDialog({ task, setTask, saveTask }) {
             id="assignee"
             label="Создатель задачи"
             value={(task && task.assignee && task.assignee.id) || ""}
-            onChange={selectHandler}
+            onChange={selectUserHandler}
           >
             {users.map((user) => (
               <MenuItem value={user.id} key={user.id}>
                 {user.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ mt: 4, width: "100%" }} size="small">
+          <InputLabel id="assignee">Тип задачи</InputLabel>
+          <Select
+            labelId="type"
+            name="type"
+            id="type"
+            label="Тип задачи"
+            value={(task && task.type) || ""}
+            onChange={handleTaskTypeChange}
+          >
+            {TASK_TYPE.map(({ value, title }) => (
+              <MenuItem value={value} key={value}>
+                {title}
               </MenuItem>
             ))}
           </Select>
