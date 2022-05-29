@@ -13,6 +13,7 @@ export default function ArticleEditor({
   isEditorOpen,
   closeEditor,
   setArticles,
+  task,
 }) {
   const [editedArticle, setEditedArticle] = useState(null);
   const [editorState, setEditorState] = useState(() =>
@@ -24,6 +25,7 @@ export default function ArticleEditor({
       ...editedArticle,
       id: shortId.generate(),
       text: convertToRaw(editorState.getCurrentContent()),
+      task,
     };
 
     setArticles((prev) => [...prev, newArticle]);

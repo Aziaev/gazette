@@ -26,6 +26,7 @@ export default function TaskProgressButton({ task }) {
         addDraft({
           base64: reader.result,
           id: shortId.generate(),
+          task,
         });
         updateTaskStatus();
       };
@@ -85,6 +86,7 @@ export default function TaskProgressButton({ task }) {
         isEditorOpen={isEditorOpen}
         setArticles={setArticles}
         closeEditor={closeEditor}
+        task={task}
       />
     </>
   );

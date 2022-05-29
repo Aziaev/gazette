@@ -2,7 +2,9 @@ import Box from "@mui/material/Box";
 import * as React from "react";
 import { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { TASK_STATUSES } from "../constants";
 import { useDraftContext } from "../context/DraftContext";
+import { useTasksContext } from "../context/TasksContext";
 import ArticleImage from "./ArticleImage";
 import { PLACEHOLDER } from "./Articles";
 import ArticleText from "./ArticleText";
@@ -24,6 +26,7 @@ export default function Article(props) {
   const isImage = article.base64;
   const isPlaceholder = article === PLACEHOLDER;
   const { deleteDraft } = useDraftContext();
+  const { updateTask } = useTasksContext();
 
   const [{ handlerId, isDragging }, drop] = useDrop({
     accept: ["article", "draft"],
@@ -36,7 +39,8 @@ export default function Article(props) {
       };
     },
     drop(item) {
-      const dragIndex = item.index;
+      const { index: dragIndex, task } = item;
+      console.log(item);
       const hoverIndex = index;
 
       if (!isPlaceholder) {
@@ -50,6 +54,10 @@ export default function Article(props) {
       if (!dragIndex) {
         moveDraft(item, hoverIndex);
         deleteDraft(item);
+      }
+
+      if (task) {
+        updateTask({ ...task, status: TASK_STATUSES.done });
       }
 
       return undefined;
