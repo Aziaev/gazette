@@ -79,8 +79,8 @@ export default function Tasks() {
       <KanbanBoard
         handleDeleteTask={handleDeleteTask}
         handleEditTask={handleEditTask}
-        tasks={list}
         handleOpen={handleOpen}
+        tasks={list}
       />
       <TaskEditDialog task={task} saveTask={saveTask} setTask={setTask} />
       <Snackbar

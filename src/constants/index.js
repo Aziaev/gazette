@@ -3,3 +3,8 @@ export const TASK_STATUSES = {
   inProgress: "В работе",
   done: "Готово",
 };
+
+export const TASK_TYPES = {
+  addImage: "Добавить картинку",
+  addText: "Добавить статью",
+};

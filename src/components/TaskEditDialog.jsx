@@ -7,13 +7,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
+import { TASK_TYPES } from "../constants";
 import { useUserContext } from "../context/UserContext";
 import { useUsersContext } from "../context/UsersContext";
-
-const TASK_TYPE = [
-  { value: "addImage", title: "Добавить картинку" },
-  { value: "addText", title: "Добавить статью" },
-];
 
 export default function TaskEditDialog({ task, setTask, saveTask }) {
   const { user } = useUserContext();
@@ -93,9 +89,9 @@ export default function TaskEditDialog({ task, setTask, saveTask }) {
             value={(task && task.type) || ""}
             onChange={handleTaskTypeChange}
           >
-            {TASK_TYPE.map(({ value, title }) => (
-              <MenuItem value={value} key={value}>
-                {title}
+            {Object.keys(TASK_TYPES).map((key) => (
+              <MenuItem value={key} key={key}>
+                {TASK_TYPES[key]}
               </MenuItem>
             ))}
           </Select>
